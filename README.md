@@ -13,11 +13,10 @@ and Storage, this app offers seamless administrative functionalities, from order
 - **User-friendly Interface**: Utilizes ViewBinding for a responsive and intuitive user interface design.
 
 ## Getting Started
-1. Clone this repository to your local machine.
-2. Open the project in Android Studio.
-3. Configure Firebase project settings and integrate Firebase Realtime Database and Storage.
-4. Build and run the app on your Android device or emulator.
-5. Start managing orders, inventory, and other aspects of your fish delivery service effortlessly.
+1. Open the project in Android Studio.
+2. Configure Firebase project settings and integrate Firebase Realtime Database and Storage.
+3. Build and run the app on your Android device or emulator.
+4. Start managing orders, inventory, and other aspects of your fish delivery service effortlessly.
 
 ## Technologies Used
 - Kotlin: Programming language used for Android app development.
