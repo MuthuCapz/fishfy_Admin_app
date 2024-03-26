@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_deal_of_the_day"
+        android:title="Deal of the Day" />
+
+    <item
+        android:id="@+id/menu_frozen_food"
+        android:title="Frozen Sea food" />
+    <item
+        android:id="@+id/menu_selling_now"
+        android:title="Selling Now" />
+</menu>

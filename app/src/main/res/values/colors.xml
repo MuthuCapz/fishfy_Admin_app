@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="textColor">#53E88B</color>
+
+    <color name="startColor">#53E88B</color>
+    <color name="endColor">#15BE77</color>
+
+    <color name="iconColor">#FEAD1D</color>
+    <color name="not_received_color">#FF3b3b</color>
+    <color name="constraint_layout_color">#f4f4f4</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#07C5C3</color>
+    <color name="lteal_700">#B6E4E4</color>
+
+    <color name="blue">#006FE4</color>
+    <color name="lblue">#AECAE7</color>
+    <color name="lBlue">#A4B9F8</color>
+
+    <color name="red_700">#FFD32F2F</color>
+</resources>
