@@ -1,4 +1,4 @@
-# Fish Delivery Admin App
+# Fresh Fish Delivery Admin App
 
 ## Overview
 Welcome to the Fresh Fish Delivery Admin App! This Android application, built using Kotlin and ViewBinding in Android Studio. Leveraging Firebase Realtime Database 
