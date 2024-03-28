@@ -7,6 +7,7 @@
 
     <color name="startColor">#53E88B</color>
     <color name="endColor">#15BE77</color>
+    <color name="peach">#E6938C</color>
 
     <color name="iconColor">#FEAD1D</color>
     <color name="not_received_color">#FF3b3b</color>
@@ -19,6 +20,7 @@
     <color name="lteal_700">#B6E4E4</color>
 
     <color name="blue">#006FE4</color>
+    <color name="Lblue">#24ADEC</color>
     <color name="lblue">#AECAE7</color>
     <color name="lBlue">#A4B9F8</color>
 
