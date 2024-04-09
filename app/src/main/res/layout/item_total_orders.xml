@@ -6,6 +6,7 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
     android:padding="16dp">
     <androidx.cardview.widget.CardView
         android:id="@+id/orderDetails"
@@ -86,12 +87,13 @@
                 android:textColor="@color/white"
                 android:text="phone:" />
 
+
             <TextView
                 android:id="@+id/cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_marginStart="120dp"
+                android:layout_marginStart="90dp"
                 android:textColor="@color/red_700"
                 android:textSize="18dp"
                 />
@@ -100,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
-                android:layout_marginStart="120dp"
+                android:layout_marginStart="100dp"
                 android:textColor="@color/red_700"
                 android:textSize="18dp"
                 />

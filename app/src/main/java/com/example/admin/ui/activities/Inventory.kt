@@ -22,6 +22,7 @@ import com.google.firebase.database.*
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileWriter
+import java.io.IOException
 
 
 class Inventory : AppCompatActivity() {
@@ -222,8 +223,8 @@ class Inventory : AppCompatActivity() {
                     // Determine the Firebase path based on category
                     val databaseReference = when (category.toLowerCase()) {
                         "deal of the day" -> FirebaseDatabase.getInstance().reference.child("menu")
-                        "frozen food" -> FirebaseDatabase.getInstance().reference.child("menu1")
-                        "selling now" -> FirebaseDatabase.getInstance().reference.child("menu2")
+                        "dry fish" -> FirebaseDatabase.getInstance().reference.child("menu1")
+                        "pickles" -> FirebaseDatabase.getInstance().reference.child("menu2")
                         else -> null // Handle other categories if needed
                     }
 
@@ -291,28 +292,37 @@ class Inventory : AppCompatActivity() {
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    val csvFile = File(
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                        "import.csv"
-                    )
-                    val csvWriter = FileWriter(csvFile)
-                    csvWriter.append("Food Name,SKU ID,Food Price,Image Url,Category,Stock,Quantity\n")
+                    try {
+                        val csvFile = File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                            "imp.csv"
+                        )
+                        val csvWriter = FileWriter(csvFile)
+                        csvWriter.append("Food Name,SKU ID,Food Price,Image Url,Category,Stock,Quantity\n")
 
-                    for (itemSnapshot in snapshot.children) {
-                        val item = itemSnapshot.getValue(RetrieveItem::class.java)
-                        item?.let {
-                            val line =
-                                "${it.foodName},${it.key},${it.foodPrice},${it.foodImage},${it.category},${it.stock},${it.quantity}\n"
-                            csvWriter.append(line)
+                        for (itemSnapshot in snapshot.children) {
+                            val item = itemSnapshot.getValue(RetrieveItem::class.java)
+                            item?.let {
+                                val line =
+                                    "${it.foodName},${it.key},${it.foodPrice},${it.foodImage},${it.category},${it.stock},${it.quantity}\n"
+                                csvWriter.append(line)
+                            }
                         }
+                        csvWriter.flush()
+                        csvWriter.close()
+                        Toast.makeText(
+                            applicationContext,
+                            "Inventory exported successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        Toast.makeText(
+                            applicationContext,
+                            "Error exporting inventory: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                    csvWriter.flush()
-                    csvWriter.close()
-                    Toast.makeText(
-                        applicationContext,
-                        "Inventory exported successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 } else {
                     Toast.makeText(
                         applicationContext,
@@ -332,4 +342,3 @@ class Inventory : AppCompatActivity() {
         })
     }
 }
-

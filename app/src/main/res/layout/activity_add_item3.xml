@@ -57,7 +57,7 @@
                 android:textSize="20dp"
                 android:id="@+id/categoryadd2"
                 android:fontFamily="@font/lato_regular"
-                android:text="@string/selling_now"
+                android:text="Pickles"
                 android:inputType="textMultiLine"
                 android:paddingEnd="8dp"
                 android:textColor="@color/blue" />

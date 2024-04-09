@@ -195,50 +195,32 @@ class AllItemsActivity : AppCompatActivity(), MenuItemAdapter.OnItemClicked {
     }
 
     private fun setAdapter() {
-        val adapter = MenuItemAdapter(this@AllItemsActivity, menuItems, databaseReference, this)
+        val adapter = MenuItemAdapter(this@AllItemsActivity, menuItems, databaseReference)
         binding.allItemRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.allItemRecyclerView.adapter = adapter
     }
 
-    override fun onItemDeleteClicked(position: Int) {
-        if (position in 0 until menuItems.size) { // Check if position is within valid range
-            val menuItemToDelete = menuItems[position]
-            val key = menuItemToDelete.key
+    fun deleteItem(skuId: String) {
+        val menuRef = databaseReference.child("menu").child(skuId)
+        val menu1Ref = databaseReference.child("menu1").child(skuId)
+        val menu2Ref = databaseReference.child("menu2").child(skuId)
 
-            // Ensure key is not null before proceeding
-            key?.let { nonNullKey ->
-                val menuReference = database.reference.child("menu").child(nonNullKey)
-                val menu1Reference = database.reference.child("menu1").child(nonNullKey)
-                val menu2Reference = database.reference.child("menu2").child(nonNullKey)
+        val deleteOperations = listOf(
+            menuRef.removeValue(),
+            menu1Ref.removeValue(),
+            menu2Ref.removeValue()
+        )
 
-                val referencesToDelete = listOfNotNull(menuReference, menu1Reference, menu2Reference)
-
-                // Delete data from Firebase
-                val deletionTasks = referencesToDelete.map { reference ->
-                    reference.removeValue()
-                }
-
-                // Wait for all deletion tasks to complete
-                Tasks.whenAll(deletionTasks).addOnCompleteListener { deletionTask ->
-                    if (deletionTask.isSuccessful) {
-                        // All deletions from Firebase were successful
-                        val adapterPosition = menuItems.indexOf(menuItemToDelete)
-                        if (adapterPosition != -1 && adapterPosition < menuItems.size) {
-                            // Ensure adapter position is valid and list is not empty
-                            // Remove item from both dataset and adapter
-                            menuItems.removeAt(adapterPosition)
-                            adapter.notifyItemRemoved(adapterPosition)
-                        } else {
-                            Log.e("DeleteError", "Item not found in the list or invalid position")
-                        }
-                    } else {
-                        Toast.makeText(this, "Failed to delete item from Firebase", Toast.LENGTH_SHORT).show()
-                    }
-                }
+        // Execute all delete operations together
+        Tasks.whenAll(deleteOperations)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Item deleted successfully", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(this, "Invalid position", Toast.LENGTH_SHORT).show()
-        }
+            .addOnFailureListener { e ->
+                Log.e("DeleteItem", "Failed to delete item: $e")
+                Toast.makeText(this, "Failed to delete item", Toast.LENGTH_SHORT).show()
+            }
     }
+
 
 }

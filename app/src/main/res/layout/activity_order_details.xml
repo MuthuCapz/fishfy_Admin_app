@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/white"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +20,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:text="Completed orders"
             android:textSize="20sp"
-            android:textColor="@color/teal_200"
+            android:textColor="@color/Lblue"
             android:textStyle="bold"
             android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"/>
@@ -32,7 +33,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:text="Pending Orders"
             android:textSize="20sp"
-            android:textColor="@color/teal_200"
+            android:textColor="@color/Lblue"
             android:textStyle="bold"
             android:layout_marginStart="230dp"
             android:layout_marginTop="10dp"/>

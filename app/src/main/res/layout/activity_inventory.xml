@@ -18,6 +18,7 @@
        app:layout_constraintTop_toTopOf="parent"
        app:layout_constraintStart_toStartOf="parent"
        android:textSize="20dp"
+       android:textColor="@color/black"
        android:layout_marginTop="15dp"
        android:layout_marginStart="120dp"
        android:fontFamily="@font/lato_bold"/>
