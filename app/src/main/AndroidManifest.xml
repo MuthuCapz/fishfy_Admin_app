@@ -16,14 +16,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Admin"
         tools:targetApi="31">
-        <activity
-            android:name=".ui.activities.MainActivity"
-            android:exported="false" />
+
+
         <activity
             android:name=".ui.activities.OrderDetailsActivity"
             android:exported="true" />
         <activity
             android:name=".ui.activities.AddItem2Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activities.AddItem3Activity"
@@ -41,8 +43,14 @@
             android:name=".ui.activities.AllItemsActivity"
             android:exported="true" />
         <activity
+            android:name=".ui.activities.PasswordActivity"
+            android:exported="true" />
+        <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"/>
+        <activity
+            android:name=".ui.activities.SplashActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

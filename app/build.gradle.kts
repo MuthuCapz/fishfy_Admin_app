@@ -51,6 +51,8 @@ dependencies {
     implementation("com.google.firebase:firebase-database:20.3.0")
     implementation("androidx.navigation:navigation-fragment:2.7.7")
     implementation("androidx.activity:activity:1.8.0")
+    implementation("com.airbnb.android:lottie:4.2.0")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.android.gms:play-services-analytics-impl:18.0.4")

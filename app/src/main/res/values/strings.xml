@@ -7,6 +7,8 @@
     <!-- Image description for accessibility -->
 
     <string name="app_name">SeaAdmin</string>
+    <string name="default_web_client_Id">646492882054-q61o0fqaiq6neostd81k87sav19sa72e.apps.googleusercontent.com</string>
+
     <string name="Sea_Food">Waves Of Food</string>
     <string name="add_item">Add Item</string>
     <string name="password">Password</string>

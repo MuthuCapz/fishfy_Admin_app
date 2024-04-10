@@ -22,6 +22,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+         <ImageView
+             android:id="@+id/logout"
+             android:layout_width="30dp"
+             android:layout_height="30dp"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintTop_toTopOf="parent"
+             app:layout_constraintEnd_toEndOf="parent"
+             android:src="@drawable/logout_icon"
+             android:layout_marginStart="300dp"
+             android:layout_marginTop="15dp"/>
 
 
     <androidx.constraintlayout.widget.Guideline

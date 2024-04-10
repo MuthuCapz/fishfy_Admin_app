@@ -11,7 +11,14 @@ import com.example.admin.ui.activities.AddItemActivity
 import com.example.admin.ui.activities.AllItemsActivity
 import com.example.admin.ui.activities.DiscountActivity
 import com.example.admin.ui.activities.Inventory
+import com.example.admin.ui.activities.LoginActivity
 import com.example.admin.ui.activities.OrderDetailsActivity
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.database.*
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var menu1Ref: DatabaseReference
     private lateinit var menu2Ref: DatabaseReference
     private lateinit var discountRef:DatabaseReference
+    private lateinit var googleApiClient: GoogleApiClient
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +43,11 @@ class MainActivity : AppCompatActivity() {
         discountRef = FirebaseDatabase.getInstance().getReference("discount")
 
         // Setup onClickListeners for buttons
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
         binding.addMenuButton.setOnClickListener {
             startActivity(Intent(this, AddItemActivity::class.java))
         }
@@ -59,11 +73,25 @@ class MainActivity : AppCompatActivity() {
         binding.discount.setOnClickListener {
             startActivity(Intent(this, DiscountActivity::class.java))
         }
+        binding.logout.setOnClickListener {
+            logout()
+        }
 
         // Fetch counts from Firebase and update TextViews
         fetchCounts()
     }
 
+
+
+    private fun logout() {
+        googleSignInClient.signOut().addOnCompleteListener(this, OnCompleteListener {
+            // After signing out, move to login activity
+            val intent = Intent(this@MainActivity, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        })
+
+    }
     private fun fetchCounts() {
         menuRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
