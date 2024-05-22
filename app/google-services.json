@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:646492882054:android:3262885577deb8d52abd07",
         "android_client_info": {
-          "package_name": "com.example.admin"
+          "package_name": "com.capztone.admin"
         }
       },
       "oauth_client": [
@@ -39,7 +39,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:646492882054:android:bc56e89142bc8ee62abd07",
         "android_client_info": {
-          "package_name": "com.example.sea"
+          "package_name": "com.capztone.seafishfy"
         }
       },
       "oauth_client": [
@@ -47,7 +47,7 @@
           "client_id": "646492882054-cj0f3ne9vnv5igq3gjjmluf0e1t28dlh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.sea",
+            "package_name": "com.capztone.seafishfy",
             "certificate_hash": "a4415f27aca160c0d0a45716ed9e4298efd97028"
           }
         },

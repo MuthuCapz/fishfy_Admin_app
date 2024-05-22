@@ -11,12 +11,14 @@
 
     <color name="iconColor">#FEAD1D</color>
     <color name="not_received_color">#FF3b3b</color>
+    <color name="Lred">#EF7070</color>
     <color name="constraint_layout_color">#f4f4f4</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#07C5C3</color>
+    <color name="teal_7000">#027168</color>
     <color name="lteal_700">#B6E4E4</color>
     <color name="navy"> #316FF6</color>
 
@@ -24,6 +26,7 @@
     <color name="Lblue">#24ADEC</color>
     <color name="lblue">#AECAE7</color>
     <color name="lBlue">#A4B9F8</color>
+    <color name="navyblue">#041C65</color>
 
     <color name="red_700">#FFD32F2F</color>
 </resources>

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.admin"
+    namespace = "com.capztone.admin"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.admin"
+        applicationId = "com.capztone.admin"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
