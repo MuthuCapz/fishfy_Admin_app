@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="10dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+android:background="@drawable/cardstroke"
+        android:backgroundTint="@color/llorange"
+        app:cardCornerRadius="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+
+
+
+            <TextView
+                android:id="@+id/useridusers"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="User ID"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="4tryd6jdkldllytriaklan" />
+            <TextView
+                android:id="@+id/tvUserId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="User ID"
+                android:visibility="invisible"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="4tryd6jdkldllytriaklan" />
+            <TextView
+                android:id="@+id/tvContactInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Contact Info"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvUserId"
+                tools:text="user@example.com or 1234567890" />
+
+            <Button
+                android:id="@+id/sendmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="send"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/navy"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/tvContactInfo"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,8 +12,8 @@ android {
         applicationId = "com.capztone.admin"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 11
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +36,7 @@ android {
     }
     buildFeatures{
         viewBinding = true
+        dataBinding = true
 
     }
 }
@@ -52,13 +53,17 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.7.7")
     implementation("androidx.activity:activity:1.8.0")
     implementation("com.airbnb.android:lottie:4.2.0")
+    implementation("com.sun.mail:android-mail:1.6.5")
+    implementation("com.sun.mail:android-activation:1.6.5")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
+
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.android.gms:play-services-analytics-impl:18.0.4")
     testImplementation("junit:junit:4.13.2")
     implementation("com.google.firebase:firebase-database-ktx:20.3.0")
-    implementation("com.opencsv:opencsv:5.6")
+   
+
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

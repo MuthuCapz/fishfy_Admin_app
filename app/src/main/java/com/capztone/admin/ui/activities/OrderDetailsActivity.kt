@@ -1,7 +1,10 @@
 package com.capztone.admin.ui.activities
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.capztone.admin.adapters.OrderAdapter
@@ -27,21 +30,33 @@ class OrderDetailsActivity : AppCompatActivity() {
 
         // Initialize RecyclerView
         binding.orderRecycler.layoutManager = LinearLayoutManager(this)
-        orderDetailsAdapter = OrderAdapter(mutableListOf())
+        orderDetailsAdapter = OrderAdapter(mutableListOf(),binding.noorders,binding.textViewPendingOrdersTitle,binding.pendingorder,binding.textViewCompletedOrders,binding.completedorder)
         binding.orderRecycler.adapter = orderDetailsAdapter
 
+        window?.let { window ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                window.statusBarColor = Color.TRANSPARENT
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                window.statusBarColor = Color.TRANSPARENT
+            }
+        }
         // Fetch order details from Firebase
         orderDetailsAdapter.fetchOrderDetailsFromFirebase()
-
+        // Finish Activity
+        binding.backButton.setOnClickListener {
+            finish()
+        }
         // Fetch order status from Firebase
         fetchOrderStatuses()
     }
 
     private fun fetchOrderStatuses() {
         val currentUserId = getCurrentUserId()
-        val adminReference = FirebaseDatabase.getInstance().getReference("Admins").child(currentUserId)
+        val adminReference = FirebaseDatabase.getInstance().getReference("Delivery Details")
 
-        adminReference.child("shopName").addListenerForSingleValueEvent(object : ValueEventListener {
+        adminReference.child("Shop Id").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val shopName = snapshot.getValue(String::class.java)
 

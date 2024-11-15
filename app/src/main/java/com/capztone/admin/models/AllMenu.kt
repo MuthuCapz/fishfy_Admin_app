@@ -2,14 +2,15 @@ package com.capztone.admin.models
 
 data class AllMenu(
     val key: String? = null,
-    val foodName: String? = null,
+    var foodName: ArrayList<String>? = null, // Change from ArrayList<String>? to String?
     val foodPrice: String? = null,
     val foodDescription: String? = null,
     var quantity: String? = null,
     val foodImage: String? = null,
     val category: String? = null,
-    val stock: String? = null,
-    val adminId: String? = null,
-
-
+    val productQuantity: String?= null,
+    var stock: String? = null,
+    val CreatedDate: String? = null,
+    val CreatedBy: String? = null,
 )
+

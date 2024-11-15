@@ -7,8 +7,14 @@ data class OrderDetails(
     val itemPushKey: String = "",
     val userUid: String = "",
     val address: String = "",
+    var selectedSlot: String = "",
+    var orderDate: String = "",
     val phone: String = "",
     val userName: String = "",
     var cancellationMessage: String ="",
     val shopNames: List<String> = emptyList(),
+    val foodImage: ArrayList<String>? = null,
+    val skuList: List<String> = emptyList(),
+
+
 )

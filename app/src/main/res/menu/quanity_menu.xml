@@ -1,0 +1,21 @@
+<!-- res/menu/quantity_menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/option_10kg"
+        android:title="10kg" />
+    <item
+        android:id="@+id/option_20kg"
+        android:title="20kg" />
+    <item
+        android:id="@+id/option_500g"
+        android:title="500g" />
+    <item
+        android:id="@+id/option_250g"
+        android:title="250g" />
+    <item
+        android:id="@+id/option_50kg"
+        android:title="50kg" />
+    <item
+        android:id="@+id/option_100kg"
+        android:title="100kg" />
+</menu>

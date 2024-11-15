@@ -12,24 +12,78 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/admin"
         android:label="Admin"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Admin"
-        tools:targetApi="31">
-
-
+        tools:targetApi="34">
+        <activity
+            android:name=".ui.activities.MainAddNewShopActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ShopDetailsGeneral"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ProfileDetailsOwner"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ViewShopActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.CustomerAccounts"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.CustomerAccountDetails"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ShopSearchActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activities.AddNewShop"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activities.SubAdminDiscountProductEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.SubAdminProductEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.GeneralDiscount"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.DiscountProductEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.SubAdminMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.SubAdminInventory"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.SubAdminOrderdetails"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activities.AddCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.GeneralAddCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.SubAdminsPassword"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activities.DeleteConfirmationActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activities.GeneralAdmin"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activities.ShopSettings"
+            android:exported="true" />
         <activity
             android:name=".ui.activities.OrderDetailsActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.activities.AddItem2Activity"
-            android:exported="false" />
-        <activity
             android:name=".ui.activities.LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activities.AddItem3Activity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".ui.activities.DiscountActivity"
             android:exported="false" />
@@ -37,20 +91,34 @@
             android:name=".ui.activities.Inventory"
             android:exported="true" />
         <activity
+            android:name=".ui.activities.GeneralAddItemActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.activities.AddItemActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.ProductEditActivity"
             android:exported="true" />
         <activity
             android:name=".ui.activities.AllItemsActivity"
             android:exported="true" />
         <activity
+            android:name=".ui.activities.SubAdminAllItemsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.activities.AddBannerActivity"
+            android:exported="true" />
+        <activity
             android:name=".ui.activities.PasswordActivity"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true"/>
+            android:name=".ui.activities.MainActivity"
+            android:exported="true" />
         <activity
             android:name=".ui.activities.SplashActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

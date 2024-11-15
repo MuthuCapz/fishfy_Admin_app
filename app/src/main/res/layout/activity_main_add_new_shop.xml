@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/llorange"
+    tools:context=".ui.activities.MainAddNewShopActivity">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:background="@color/navy"
+        android:paddingBottom="20dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/nunito"
+        android:text="Fishfy Admin"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/logout"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="50dp"
+        android:src="@drawable/logout_icon"
+        android:tint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/textView5" />
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView1"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/search_shape"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        app:iconifiedByDefault="false"
+        app:layout_constraintTop_toBottomOf="@id/textView5"
+        app:searchIcon="@drawable/search"
+        app:queryHint="Search shop names"
+        app:queryBackground="@android:color/transparent"
+        tools:ignore="MissingClass" />
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="560dp"
+        android:layout_marginStart="20dp"
+        app:cardCornerRadius="20dp"
+        android:backgroundTint="@color/white"
+        android:elevation="30dp"
+        android:background="@drawable/edit_text_shape"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="280dp"
+            android:layout_height="190dp"
+            android:src="@drawable/background1"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+        <TextView
+            android:id="@+id/shopNameTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add and View Shop"
+            android:textColor="@color/navy"
+            android:fontFamily="@font/nunito"
+            android:textSize="18sp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="190dp"/>
+        <TextView
+            android:id="@+id/deleteTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Deleted Accounts"
+            android:textColor="@color/navy"
+            android:fontFamily="@font/nunito"
+            android:textSize="18sp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="440dp"/>
+        <!-- First Section (AllProducts) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/Addshop"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/cardstroke"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginTop="230dp"
+            android:elevation="2dp"
+            android:padding="10dp"
+            app:layout_constraintWidth_percent="0.45"
+            app:layout_constraintStart_toStartOf="parent">
+
+
+            <ImageView
+                android:id="@+id/categoryImageView"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/allitems"
+                android:layout_marginStart="8dp"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/grey"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/categoryNameTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:text="Add New Shop"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:fontFamily="@font/nunito"
+                app:layout_constraintStart_toEndOf="@id/categoryImageView"
+                app:layout_constraintTop_toTopOf="@id/categoryImageView"
+                app:layout_constraintBottom_toBottomOf="@id/categoryImageView"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/viewshop"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/cardstroke"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:elevation="2dp"
+            android:visibility="visible"
+            android:layout_marginTop="300dp"
+            android:padding="10dp"
+            app:layout_constraintWidth_percent="0.45"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/Addshop">
+
+            <ImageView
+                android:id="@+id/categoryImageView3"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/viewshop"
+                android:layout_marginStart="8dp"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/grey"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/categoryNameTextView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:text="View Shop"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:fontFamily="@font/nunito"
+                app:layout_constraintStart_toEndOf="@id/categoryImageView3"
+                app:layout_constraintTop_toTopOf="@id/categoryImageView3"
+                app:layout_constraintBottom_toBottomOf="@id/categoryImageView3"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/viewcustomer"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/cardstroke"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:elevation="2dp"
+            android:visibility="visible"
+            android:layout_marginTop="370dp"
+            android:padding="10dp"
+            app:layout_constraintWidth_percent="0.45"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/viewshop">
+
+            <ImageView
+                android:id="@+id/customerImage"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/user"
+                android:layout_marginStart="8dp"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/grey"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/customerText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:text="Customer Accounts"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:fontFamily="@font/nunito"
+                app:layout_constraintStart_toEndOf="@id/customerImage"
+                app:layout_constraintTop_toTopOf="@id/customerImage"
+                app:layout_constraintBottom_toBottomOf="@id/customerImage"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/deleteaccount"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/cardstroke"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:elevation="2dp"
+            android:layout_marginTop="490dp"
+            android:padding="10dp"
+            app:layout_constraintWidth_percent="0.45"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+
+            <ImageView
+                android:id="@+id/delete"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:src="@drawable/trash_can"
+                android:tint="@color/navy"
+                android:layout_marginStart="8dp"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/grey"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/delete1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:text="User Deleted Accounts"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:fontFamily="@font/nunito"
+                app:layout_constraintStart_toEndOf="@id/delete"
+                app:layout_constraintTop_toTopOf="@id/delete"
+                app:layout_constraintBottom_toBottomOf="@id/delete"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

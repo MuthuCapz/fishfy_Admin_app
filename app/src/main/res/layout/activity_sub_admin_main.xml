@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Root ConstraintLayout replacing CardView -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:background="@color/white">
+
+            <!-- Toolbar at the top -->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:minHeight="?attr/actionBarSize"
+                android:background="@color/navy"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_default="wrap"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+            <!-- CircleImageView for profile picture -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="40dp"
+                android:src="@drawable/profile"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/textView50" />
+
+            <!-- Title TextView in Toolbar -->
+            <TextView
+                android:id="@+id/textView50"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="16sp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/nunito"
+                android:layout_marginTop="50dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+            <!-- Logout Icon -->
+            <ImageView
+                android:id="@+id/logout"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/logout_icon"
+                android:tint="@color/white"
+                android:contentDescription="@string/log_out"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/toolbar"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="45dp" />
+            <!-- Customer Orders Label -->
+            <TextView
+                android:id="@+id/OrderDetailsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="Order Details"
+                android:textSize="18sp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="15dp"
+                android:textColor="@color/navy"
+                android:fontFamily="@font/nunito"
+                app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/mainOrders"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/OrderDetailsTitle"
+                android:background="@drawable/cardstroke">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!-- First Card Section -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/New"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/verticalDivider"
+                        app:layout_constraintWidth_percent="0.48"> <!-- 48% width -->
+
+                        <TextView
+                            android:id="@+id/new_orders2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="New Orders"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/grey"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textSize="16sp"
+                            android:layout_marginTop="15dp" />
+
+                        <TextView
+                            android:id="@+id/new_orders3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/new_orders2"
+                            android:textSize="20sp"
+                            android:layout_marginTop="15dp" />
+
+                        <TextView
+                            android:id="@+id/new_orders4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Proceed"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/navy"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/new_orders3"
+                            android:textSize="14sp"
+                            android:layout_marginTop="5dp" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!-- Horizontal Red Divider -->
+                    <View
+                        android:id="@+id/verticalDivider"
+                        android:layout_width="1dp"
+                        android:layout_height="100dp"
+                        android:background="@color/navy"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/New"
+                        app:layout_constraintEnd_toStartOf="@id/New2" />
+
+                    <!-- Second Card Section -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/New2"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toEndOf="@id/verticalDivider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintWidth_percent="0.48"> <!-- 48% width -->
+
+                        <TextView
+                            android:id="@+id/ongoing3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ongoing Orders"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/grey"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textSize="16sp"
+                            android:layout_marginTop="15dp" />
+
+                        <TextView
+                            android:id="@+id/ongoing4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/ongoing3"
+                            android:textSize="20sp"
+                            android:layout_marginTop="15dp" />
+
+                        <TextView
+                            android:id="@+id/ongoing5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Proceed"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/navy"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/ongoing4"
+                            android:textSize="14sp"
+                            android:layout_marginTop="5dp" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/appcompat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/mainOrders"
+                android:padding="5dp">
+
+                <!-- Complete Orders Button with TextView next to it -->
+                <LinearLayout
+                    android:id="@+id/New3"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@drawable/green_button_gradient1"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:gravity="center">
+
+                    <!-- Complete Orders Text -->
+                    <TextView
+                        android:id="@+id/button1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Completed Orders"
+                        android:textColor="@color/navy"
+                        android:textSize="15sp"
+                        android:textAllCaps="false"
+                        android:fontFamily="@font/nunito" />
+
+                    <!-- Additional TextView placed after Complete Orders text -->
+                    <TextView
+                        android:id="@+id/completed3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="10"
+                        android:textColor="@color/navy"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/nunito" />
+                </LinearLayout>
+
+                <!-- Cancel Orders Button with TextView next to it -->
+                <LinearLayout
+                    android:id="@+id/New4"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:background="@drawable/green_button_gradient1"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center">
+
+                    <!-- Cancel Orders Text -->
+                    <TextView
+                        android:id="@+id/button1_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cancel Orders"
+                        android:textColor="@color/navy"
+                        android:textSize="15sp"
+                        android:textAllCaps="false"
+                        android:fontFamily="@font/nunito" />
+
+                    <!-- Additional TextView placed after Cancel Orders text -->
+                    <TextView
+                        android:id="@+id/canceled3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="10"
+                        android:textColor="@color/navy"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/nunito" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="5dp"
+                android:elevation="10dp"
+                android:indeterminateTint="@color/navy"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:gravity="center"
+                android:indeterminate="true" />
+            <TextView
+                android:id="@+id/categories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/nunito"
+                android:text="Add Item By Categories"
+                android:textColor="@color/blue"
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@id/appcompat"
+                app:layout_constraintStart_toStartOf="parent"/>
+            <LinearLayout
+                android:id="@+id/categorylist1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/categories">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/categories"
+                    tools:listitem="@layout/category_item" />
+            </LinearLayout>
+
+
+            <!-- First Section (AllProducts) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/AllProducts"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cardstroke"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                app:layout_constraintWidth_percent="0.45"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/categorylist1">
+
+                <ImageView
+                    android:id="@+id/categoryImageView"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/allitems"
+                    android:layout_marginStart="8dp"
+                    app:civ_border_width="1dp"
+                    app:civ_border_color="@color/grey"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <TextView
+                    android:id="@+id/categoryNameTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="All Products"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nunito"
+                    app:layout_constraintStart_toEndOf="@id/categoryImageView"
+                    app:layout_constraintTop_toTopOf="@id/categoryImageView"
+                    app:layout_constraintBottom_toBottomOf="@id/categoryImageView"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Second Section (SubInventory) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/SubInventory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cardstroke"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                app:layout_constraintWidth_percent="0.45"
+                app:layout_constraintStart_toEndOf="@id/AllProducts"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/categorylist1">
+
+                <ImageView
+                    android:id="@+id/categoryImageView1"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/inventory"
+                    android:layout_marginStart="8dp"
+                    app:civ_border_width="1dp"
+                    app:civ_border_color="@color/grey"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <TextView
+                    android:id="@+id/categoryNameTextView1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Inventory"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nunito"
+                    app:layout_constraintStart_toEndOf="@id/categoryImageView1"
+                    app:layout_constraintTop_toTopOf="@id/categoryImageView1"
+                    app:layout_constraintBottom_toBottomOf="@id/categoryImageView1"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Third Section (AddCategory) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/addCategory"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/cardstroke"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:padding="10dp"
+                app:layout_constraintWidth_percent="0.45"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/AllProducts">
+
+                <ImageView
+                    android:id="@+id/categoryImageView3"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/addcategory"
+                    android:layout_marginStart="8dp"
+                    app:civ_border_width="1dp"
+                    app:civ_border_color="@color/grey"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <TextView
+                    android:id="@+id/categoryNameTextView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:text="Add Category"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/nunito"
+                    app:layout_constraintStart_toEndOf="@id/categoryImageView3"
+                    app:layout_constraintTop_toTopOf="@id/categoryImageView3"
+                    app:layout_constraintBottom_toBottomOf="@id/categoryImageView3"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

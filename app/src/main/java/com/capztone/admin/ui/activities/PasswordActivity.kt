@@ -2,18 +2,28 @@ package com.capztone.admin.ui.activities
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.capztone.admin.MainActivity
+import com.capztone.admin.R
 import com.capztone.admin.databinding.ActivityPasswordBinding
+import com.capztone.admin.ui.activities.GeneralAdmin
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.random.Random
 
 class PasswordActivity : AppCompatActivity() {
@@ -21,6 +31,7 @@ class PasswordActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPasswordBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
+    private var allowedPassword: String? = null
 
     @SuppressLint("SuspiciousIndentation")
 
@@ -31,34 +42,80 @@ class PasswordActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
-        val username = intent.getStringExtra("USERNAME")
-        val email = intent.getStringExtra("EMAIL")
 
+        window?.let { window ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                window.statusBarColor = Color.TRANSPARENT
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                window.statusBarColor = Color.TRANSPARENT
+            }
+        }
+
+        // Try to retrieve data from the intent
+        val username = intent.getStringExtra("USERNAME") ?: getUsernameFromPreferences()
+        val email= intent.getStringExtra("EMAIL") ?: getEmailFromPreferences()
         // Set retrieved data to TextViews
         binding.textViewUsername.text = "Username: $username"
         binding.textViewEmail.text = "Email: $email"
-
+        // Fetch allowed password from Firebase
+        fetchAllowedPassword()
         // Disable the button initially
         binding.btnSubmit.isEnabled = false
+        var isPasswordVisible = false
+
+        binding.imageViewTogglePassword.setOnClickListener {
+            if (isPasswordVisible) {
+                // Hide Password
+                binding.editTextPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.imageViewTogglePassword.setImageResource(R.drawable.invisible)
+                isPasswordVisible = false
+            } else {
+                // Show Password
+                binding.editTextPassword.inputType = InputType.TYPE_CLASS_TEXT
+                binding.imageViewTogglePassword.setImageResource(R.drawable.visible)
+                isPasswordVisible = true
+            }
+            // Move cursor to the end of the text
+            binding.editTextPassword.setSelection(binding.editTextPassword.text.length)
+        }
 
         // Add text change listeners to both password and address fields
         binding.editTextPassword.addTextChangedListener(passwordTextWatcher)
-        binding.address.addTextChangedListener(addressTextWatcher)
+
 
         binding.btnSubmit.setOnClickListener {
             val password = binding.editTextPassword.text.toString()
-            val address = binding.address.text.toString()
+
 
             // Check if the password is valid
-            if (password.isNotBlank() && address.isNotBlank()) {
-                saveUserInfo(password, address)
+            if (password.isNotBlank()) {
+                saveUserInfo(password)
 
             } else {
-                Toast.makeText(this, "Please enter both password and address", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show()
             }
         }
     }
+    private fun fetchAllowedPassword() {
+        // Firebase path to retrieve password
+        val passwordRef = database.child("General Admin").child("Password")
+        passwordRef.get().addOnSuccessListener { snapshot ->
+            allowedPassword = snapshot.getValue(String::class.java)
+        }.addOnFailureListener { e ->
+            Toast.makeText(this, "Failed to retrieve password: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun getUsernameFromPreferences(): String {
+        val sharedPreferences = getSharedPreferences("user_info", MODE_PRIVATE)
+        return sharedPreferences.getString("USERNAME", null) ?: "Unknown"
+    }
 
+    private fun getEmailFromPreferences(): String {
+        val sharedPreferences = getSharedPreferences("user_info", MODE_PRIVATE)
+        return sharedPreferences.getString("EMAIL", null) ?: "Unknown"
+    }
     // TextWatcher for password field
     private val passwordTextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -67,7 +124,7 @@ class PasswordActivity : AppCompatActivity() {
 
         override fun afterTextChanged(s: Editable?) {
             // Enable the button only if both password and address fields are filled
-            binding.btnSubmit.isEnabled = s.toString().isNotEmpty() && binding.address.text.toString().isNotBlank()
+            binding.btnSubmit.isEnabled = s.toString().isNotEmpty()
         }
     }
 
@@ -83,47 +140,65 @@ class PasswordActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveUserInfo(password: String, address: String) {
+    private fun saveUserInfo(password: String) {
         val user = auth.currentUser
-        val username = intent.getStringExtra("USERNAME") ?: ""
+        val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
+        val Username = account?.displayName ?: "Unknown User"
         val email = intent.getStringExtra("EMAIL") ?: ""
 
-        // List of allowed passwords
-        val allowedPasswords = listOf("Admin1", "Admin2", "Admin3", "Admin4", "Admin5", "Admin6")
 
-        if (password in allowedPasswords) {
-            val passwordEntered = password
-
-            // Map of passwords to shop names
-            val passwordToShopName = mapOf(
-                "Admin1" to "Shop 1",
-                "Admin2" to "Shop 2",
-                "Admin3" to "Shop 3",
-                "Admin4" to "Shop 4",
-                "Admin5" to "Shop 5",
-                "Admin6" to "Shop 6"
-            )
-
-            val shopName = passwordToShopName[passwordEntered] ?: ""
-
+        if (password == allowedPassword) {
             val userId = user?.uid ?: ""
-            val userInfo = hashMapOf(
-                "username" to username,
-                "email" to email,
-                "password" to passwordEntered,
-                "shopName" to shopName
-            )
 
-            database.child("Admins").child(userId).setValue(userInfo)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "User info saved to database", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, com.capztone.admin.MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
+            // Get current date and time
+            val currentDate = Date()
+            val dateFormat = SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault())
+            val currentFormattedDate = dateFormat.format(currentDate)
+
+            // Reference to the user in the database
+            val userRef = database.child("General Admin")
+
+            userRef.get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    // User data exists, update the necessary fields
+                    val updateData = hashMapOf(
+                        "UpdatedBy" to Username,
+                        "UpdatedDate" to currentFormattedDate
+                    )
+
+                    userRef.updateChildren(updateData as Map<String, Any>).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(this, "User info updated successfully", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this, MainAddNewShopActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            Toast.makeText(this, "Failed to update user info: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    // User data does not exist, create new data with CreatedDate and CreatedBy
+                    val userInfo = hashMapOf(
+
+
+                        "CreatedBy" to Username,
+                        "CreatedDate" to currentFormattedDate
+                    )
+
+                    userRef.setValue(userInfo)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "User info saved to database", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this, MainAddNewShopActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Failed to save user info: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
                 }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Failed to save user info: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+            }.addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to retrieve user info: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Toast.makeText(this, "Invalid password. Please enter a valid password.", Toast.LENGTH_SHORT).show()
         }

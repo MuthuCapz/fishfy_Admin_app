@@ -2,13 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
+    <color name="lash">#E9E9EF</color>
     <color name="textColor">#53E88B</color>
-
+    <color name="lnavy">#F6846D</color>
     <color name="startColor">#53E88B</color>
     <color name="endColor">#15BE77</color>
     <color name="peach">#E6938C</color>
-
+    <color name="lblack">#323131</color>
     <color name="iconColor">#FEAD1D</color>
     <color name="not_received_color">#FF3b3b</color>
     <color name="Lred">#EF7070</color>
@@ -20,13 +20,18 @@
     <color name="teal_700">#07C5C3</color>
     <color name="teal_7000">#027168</color>
     <color name="lteal_700">#B6E4E4</color>
-    <color name="navy"> #316FF6</color>
-
-    <color name="blue">#006FE4</color>
+    <color name="navy">#ff512f</color>
+    <color name="gray">#999999</color>
+    <color name="blue">#ff512f</color>
     <color name="Lblue">#24ADEC</color>
-    <color name="lblue">#AECAE7</color>
+    <color name="active">#4CDC53</color>
+    <color name="lblue">#F8EADA</color>
     <color name="lBlue">#A4B9F8</color>
     <color name="navyblue">#041C65</color>
-
+    <color name="red">#F1151C</color>
+    <color name="llorange">#F8EADA</color>
+    <color name="lllorange">#FBF6F0</color>
+    <color name="grey">#6A6969</color>
+    <color name="ash">#E5E5E6</color>
     <color name="red_700">#FFD32F2F</color>
 </resources>

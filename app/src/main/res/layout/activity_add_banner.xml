@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ui.activities.AddBannerActivity">
+
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
+        android:contentDescription="@string/image_description"
+        android:src="@drawable/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/nunito"
+        android:text="Banner"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/selectImage"
+        android:layout_width="0dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/edit_text_shape"
+        android:fontFamily="@font/inika_regular"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="@string/select_image"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView16"
+        app:drawableEndCompat="@drawable/add" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        app:cardCornerRadius="15dp"
+        app:layout_constraintEnd_toEndOf="@+id/selectImage"
+        app:layout_constraintStart_toStartOf="@+id/selectImage"
+        app:layout_constraintTop_toBottomOf="@+id/selectImage">
+
+        <ImageView
+            android:id="@+id/selectedImageView"
+            android:layout_width="175dp"
+            android:layout_height="110dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/photo"
+            android:contentDescription="@string/image_description" />
+
+    </androidx.cardview.widget.CardView>
+<Button
+    android:id="@+id/addbutton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Add"
+    android:textColor="@color/white"
+    android:backgroundTint="@color/navy"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="350dp"
+    android:gravity="center"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/white"
+    tools:context=".ui.activities.ShopDetailsGeneral">
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="30dp"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <!-- Main Heading -->
+        <TextView
+            android:id="@+id/shopDetailsHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shop Profile"
+            android:fontFamily="@font/nunito"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Profile Image -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/profile"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@id/shopDetailsHeading"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Shop Owner Name -->
+        <TextView
+            android:id="@+id/ownerNameLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Shop Owner Name"
+            android:textColor="@color/navy"
+            android:fontFamily="@font/nunito"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="35dp"
+            app:layout_constraintTop_toBottomOf="@id/shopNameTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <EditText
+            android:id="@+id/ownerNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito"
+            android:enabled="false"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/ownerNameLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/editOwnerNameIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/edit"
+            android:contentDescription="Edit Owner Name"
+            app:layout_constraintTop_toBottomOf="@id/ownerNameLabel"
+            app:layout_constraintEnd_toEndOf="@id/ownerNameTextView"
+            android:layout_marginStart="8dp"/>
+
+        <!-- Shop Name -->
+
+        <TextView
+            android:id="@+id/shopNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito"
+            android:enabled="false"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/profileImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+        <!-- Location -->
+        <TextView
+            android:id="@+id/locationLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textColor="@color/navy"
+            android:fontFamily="@font/nunito"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/ownerNameTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <EditText
+            android:id="@+id/locationTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito"
+            android:enabled="false"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/locationLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/editLocationIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/edit"
+            android:contentDescription="Edit Location"
+            app:layout_constraintTop_toBottomOf="@id/locationLabel"
+            app:layout_constraintEnd_toEndOf="@id/locationTextView"
+            android:layout_marginStart="8dp"/>
+
+        <!-- Email -->
+        <TextView
+            android:id="@+id/emailLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:fontFamily="@font/nunito"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/navy"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/locationTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <EditText
+            android:id="@+id/emailTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito"
+            android:enabled="false"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/emailLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/editEmailIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/edit"
+            android:contentDescription="Edit Email"
+            app:layout_constraintTop_toBottomOf="@id/emailLabel"
+            app:layout_constraintEnd_toEndOf="@id/emailTextView"
+            android:layout_marginStart="8dp"/>
+
+        <!-- Phone Number -->
+        <TextView
+            android:id="@+id/phoneNumberLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Phone Number"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/navy"
+            android:fontFamily="@font/nunito"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/emailTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <EditText
+            android:id="@+id/phoneNumberTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/nunito"
+            android:enabled="false"
+            android:textSize="14sp"
+            android:inputType="number"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/phoneNumberLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <ImageView
+            android:id="@+id/editPhoneNumberIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/edit"
+            android:contentDescription="Edit Phone Number"
+            app:layout_constraintTop_toBottomOf="@id/phoneNumberLabel"
+            app:layout_constraintEnd_toEndOf="@id/phoneNumberTextView"
+            android:layout_marginStart="8dp"/>
+
+        <!-- Save Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/updateInformationButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Update Information"
+            android:fontFamily="@font/nunito"
+            android:textSize="16sp"
+            android:background="@drawable/green_button_gradient"
+            android:backgroundTint="@color/navy"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="45dp"
+            app:layout_constraintTop_toBottomOf="@id/phoneNumberTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

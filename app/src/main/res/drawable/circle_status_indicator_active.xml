@@ -1,0 +1,5 @@
+<!-- circle_status_indicator.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/active" /> <!-- Change to your active/inactive color -->
+    <corners android:radius="50dp" /> <!-- High radius to ensure circular shape -->
+</shape>

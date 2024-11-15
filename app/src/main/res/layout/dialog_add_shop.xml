@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:background="@drawable/cardstroke3"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/cancel"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="end"
+        android:src="@drawable/baseline_close_24"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="Add New Shop"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/nunito"
+        android:layout_marginStart="10dp" />
+
+    <EditText
+        android:id="@+id/editTextShopName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter shop name"
+        android:maxLength="100"
+        android:maxLines="1"
+        android:inputType="text"
+        android:layout_marginTop="10dp"
+        android:textColorHint="@color/grey"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/nunito"
+        android:textColor="@android:color/black" />
+    <EditText
+        android:id="@+id/shopMail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter shop Mail Id"
+        android:inputType="text"
+        android:layout_marginTop="10dp"
+        android:textColorHint="@color/grey"
+android:maxLines="1"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/nunito"
+        android:textColor="@android:color/black" />
+    <EditText
+        android:id="@+id/shopOwnerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Owner Name"
+        android:inputType="text"
+        android:layout_marginTop="10dp"
+        android:textColorHint="@color/grey"
+        android:maxLength="30"
+android:maxLines="1"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/nunito"
+        android:textColor="@android:color/black" />
+    <EditText
+        android:id="@+id/shopMobile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Mobile Number"
+        android:inputType="number"
+        android:layout_marginTop="10dp"
+        android:textColorHint="@color/grey"
+        android:maxLength="10"
+        android:maxLines="1"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/nunito"
+        android:textColor="@android:color/black" />
+    <EditText
+        android:id="@+id/shopCity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Shop City"
+        android:inputType="text"
+        android:layout_marginTop="10dp"
+        android:textColorHint="@color/grey"
+        android:maxLength="100"
+android:maxLines="1"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/nunito"
+        android:textColor="@android:color/black" />
+    <!-- RelativeLayout to hold password EditText and the toggle icon -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <EditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:textSize="16sp"
+            android:maxLines="1"
+            android:maxLength="10"
+            android:textColorHint="@color/grey"
+            android:fontFamily="@font/nunito"
+            android:textColor="@android:color/black"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/passwordToggle" />
+
+        <!-- ImageView for the password visibility toggle -->
+        <ImageView
+            android:id="@+id/passwordToggle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/invisible"
+            android:layout_marginTop="5dp"
+            android:tint="@color/black"
+            android:layout_alignParentEnd="true"
+            android:padding="10dp"
+            android:contentDescription="Toggle password visibility" />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnDialogYes"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:text="Submit And Go To Shop"
+            android:gravity="center"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:fontFamily="@font/nunito"
+            android:backgroundTint="@color/navy"
+            android:background="@drawable/search_shape"
+            android:textColor="@color/white"
+            android:padding="10dp" />
+    </LinearLayout>
+</LinearLayout>

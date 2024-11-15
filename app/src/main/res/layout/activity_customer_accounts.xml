@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/llorange">
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="5dp"
+        android:elevation="10dp"
+        android:indeterminateTint="@color/navy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:gravity="center"
+        android:indeterminate="true" />
+    <!-- Toolbar at the top -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="95dp"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/navy"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_default="wrap"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <!-- Title TextView in Toolbar -->
+    <TextView
+        android:id="@+id/textView50"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:text="Customer Accounts"
+        android:textSize="20sp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/nunito"
+        android:layout_marginTop="45dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="48dp"
+        android:tint="@color/white"
+        android:contentDescription="@string/image_description"
+        android:src="@drawable/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/llorange"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:layout_marginTop="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Root ConstraintLayout replacing CardView -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:background="@color/llorange">
+            <!-- Customer Orders Label -->
+            <TextView
+                android:id="@+id/Counts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="User Info"
+                android:textSize="18sp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="15dp"
+                android:textColor="@color/navy"
+                android:fontFamily="@font/nunito"
+                app:layout_constraintTop_toTopOf="parent"/>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/mainOrders"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="20dp"
+                android:backgroundTint="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/Counts"
+                android:background="@drawable/cardstroke">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!-- First Card Section -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/userConstraint"
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        > <!-- 48% width -->
+
+                        <TextView
+                            android:id="@+id/users"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Users"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/grey"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textSize="16sp"
+                            android:layout_marginTop="15dp" />
+
+                        <TextView
+                            android:id="@+id/userCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/users"
+                            android:textSize="20sp"
+                            android:layout_marginTop="10dp" />
+
+                        <ImageView
+                            android:id="@+id/new_orders4"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/pic_default"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/navy"
+                            android:tint="@color/grey"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/userCount"
+                            android:textSize="14sp"
+                            android:layout_marginTop="5dp" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!-- Horizontal Red Divider -->
+                    <View
+                        android:id="@+id/verticalDivider"
+                        android:layout_width="1dp"
+                        android:layout_height="100dp"
+                        android:background="@color/navy"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/userConstraint"
+                        />
+
+                    <!-- Second Card Section -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/activeConstraint"
+                        android:layout_width="110dp"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toEndOf="@id/verticalDivider"
+                        app:layout_constraintEnd_toStartOf="@id/inactiveConstraint"
+                        > <!-- 48% width -->
+
+                        <TextView
+                            android:id="@+id/active"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Active Users"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/grey"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textSize="16sp"
+                            android:layout_marginTop="15dp" />
+
+                        <TextView
+                            android:id="@+id/activeCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/active"
+                            android:textSize="20sp"
+                            android:layout_marginTop="10dp" />
+
+                        <ImageView
+                            android:id="@+id/ongoing5"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/circle_status_indicator_active"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/navy"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/activeCount"
+                            android:textSize="14sp"
+                            android:layout_marginTop="8dp" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <!-- Horizontal Red Divider -->
+                    <View
+                        android:id="@+id/verticalDivider1"
+                        android:layout_width="1dp"
+                        android:layout_height="100dp"
+                        android:background="@color/navy"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/activeConstraint"
+                        />
+
+                    <!-- Second Card Section -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/inactiveConstraint"
+                        android:layout_width="120dp"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toEndOf="@id/verticalDivider1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        > <!-- 48% width -->
+
+                        <TextView
+                            android:id="@+id/inActive"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Inactive Users"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/grey"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textSize="16sp"
+                            android:layout_marginTop="15dp" />
+
+                        <TextView
+                            android:id="@+id/InActiveCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/inActive"
+                            android:textSize="20sp"
+                            android:layout_marginTop="10dp" />
+
+                        <ImageView
+                            android:id="@+id/ongoing6"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:fontFamily="@font/nunito"
+                            android:textColor="@color/navy"
+                            android:src="@drawable/circle_status_indicator_inactive"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/InActiveCount"
+                            android:textSize="14sp"
+                            android:layout_marginTop="8dp" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/customerDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/nunito"
+                android:text="Customer Details"
+                android:textColor="@color/blue"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/mainOrders"
+                tools:layout_editor_absoluteY="329dp" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@color/white"
+                android:background="@drawable/search_shape"
+                android:focusable="false"
+                app:iconifiedByDefault="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customerDetails"
+                app:queryBackground="@android:color/transparent"
+                app:queryHint="Search for Seafood Delights"
+                app:searchIcon="@drawable/search"
+                tools:ignore="MissingClass" />
+            <LinearLayout
+                android:id="@+id/categorylist1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/llorange"
+                app:layout_constraintTop_toBottomOf="@id/searchView">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="1dp"
+                    android:orientation="vertical"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/categories"
+                    tools:listitem="@layout/all_customers_item" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,79 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/white"
-    android:layout_height="match_parent">
+    tools:context=".ui.activities.OrderDetailsActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
+        android:contentDescription="image_description"
+        android:src="@drawable/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Title: Order Details -->
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/nunito"
+        android:text="Order Details"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <!-- No Orders TextView -->
+    <TextView
+        android:id="@+id/noorders"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".ui.activities.OrderDetailsActivity">
 
-        <TextView
-            android:id="@+id/textViewCompletedOrders"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="Completed orders"
-            android:textSize="20sp"
-            android:textColor="@color/navy"
-            android:textStyle="bold"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="10dp"/>
+        android:gravity="center"
+        android:text="No Orders"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:fontFamily="@font/nunito"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <!-- ScrollView for content below the title -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/textView16"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/textViewPendingOrdersTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="Pending Orders"
-            android:textSize="20sp"
-            android:textColor="@color/navy"
-            android:textStyle="bold"
-            android:layout_marginEnd="30dp"
-            android:layout_marginTop="10dp"/>
-
-        <TextView
-            android:id="@+id/pendingorder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="3"
-            android:textSize="18sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginStart="200dp"
-            android:layout_marginTop="40dp"/>
-
-        <TextView
-            android:id="@+id/completedorder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="3"
-            android:textSize="18sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginStart="110dp"
-            android:layout_marginTop="40dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/orderRecycler"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="90dp"
-            tools:listitem="@layout/item_total_orders"/>
+            android:layout_height="wrap_content">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            <!-- Completed Orders TextView -->
+            <TextView
+                android:id="@+id/textViewCompletedOrders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Completed orders"
+                android:textColor="@color/navy"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Pending Orders Title -->
+            <TextView
+                android:id="@+id/textViewPendingOrdersTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:text="Pending Orders"
+                android:textColor="@color/navy"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Pending Orders Count -->
+            <TextView
+                android:id="@+id/pendingorder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="10dp"
+                android:text="3"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/textViewPendingOrdersTitle"
+                app:layout_constraintStart_toStartOf="@id/textViewPendingOrdersTitle"
+                app:layout_constraintTop_toBottomOf="@id/textViewPendingOrdersTitle" />
+
+            <!-- Completed Orders Count -->
+            <TextView
+                android:id="@+id/completedorder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="10dp"
+                android:text="3"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@id/textViewCompletedOrders"
+                app:layout_constraintEnd_toEndOf="@id/textViewCompletedOrders"
+                app:layout_constraintTop_toBottomOf="@id/textViewCompletedOrders" />
+
+
+
+            <!-- RecyclerView for Orders -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/orderRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/completedorder"
+                tools:listitem="@layout/item_total_orders" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
