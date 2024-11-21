@@ -2,6 +2,7 @@ package com.capztone.admin.ui.activities
 
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +10,15 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import android.Manifest
+
+import android.os.Environment
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.capztone.admin.adapters.ViewShopAdapter
@@ -35,18 +45,6 @@ class ViewShopActivity : AppCompatActivity() {
         binding = ActivityViewShopBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set up status bar transparency
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
-        }
 
         // Initialize Firebase Database references
         shopDatabase = FirebaseDatabase.getInstance().getReference("ShopNames")
@@ -68,6 +66,11 @@ class ViewShopActivity : AppCompatActivity() {
         binding.progress.visibility = View.VISIBLE
 
         fetchShopData()
+
+        binding.exportButton.setOnClickListener {
+            exportShopListToCSV()
+        }
+
 
         // Handle back button click
         binding.searchBackButton.setOnClickListener {
@@ -92,6 +95,65 @@ class ViewShopActivity : AppCompatActivity() {
 
         dialog.show()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+    }
+    private fun exportShopListToCSV() {
+        try {
+            // Define the file path in the app's private external storage directory
+            val appDirectory = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+            if (appDirectory == null || !appDirectory.exists()) {
+                appDirectory?.mkdirs() // Create the directory if it doesn't exist
+            }
+
+            val csvFile = File(appDirectory, "ShopList.csv")
+            val writer = FileWriter(csvFile)
+
+            // Define CSV header and content
+            val csvHeader = "Shop ID,Shop Name,Mobile Number,Created Date\n"
+            writer.append(csvHeader)
+
+            for (shop in filteredShopList) {
+                val formattedDate = SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault()).format(Date(shop.createdDate))
+                writer.append("${shop.shopId},${shop.shopName},${shop.mobileNumber ?: "N/A"},${formattedDate}\n")
+            }
+
+            writer.flush()
+            writer.close()
+
+            // Inform the user about the file location
+            Log.d("ExportCSV", "CSV file created successfully at: ${csvFile.absolutePath}")
+            showToast("CSV file exported to: ${csvFile.absolutePath}")
+        } catch (e: IOException) {
+            Log.e("ExportCSV", "Error creating CSV file: ${e.message}")
+            showToast("Failed to export CSV file.")
+        }
+    }
+
+
+    private fun checkPermissions(): Boolean {
+        val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        return writePermission == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestPermissions() {
+
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            REQUEST_WRITE_PERMISSION
+        )
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_WRITE_PERMISSION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            exportShopListToCSV()
+        } else {
+            showToast("Permission denied. Unable to export CSV.")
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
     private fun showdeletedialog(shopId: String) {
 
@@ -189,10 +251,9 @@ class ViewShopActivity : AppCompatActivity() {
                 }
         }
 
-        // Reference to the "Addresses" path
         val locationsRef = FirebaseDatabase.getInstance().getReference("Addresses")
 
-// Iterate through all children of "Addresses"
+        // Iterate through all children of "Addresses"
         locationsRef.get().addOnSuccessListener { snapshot ->
             for (child in snapshot.children) {
                 // Get the "Shop Id" value for each child
@@ -205,22 +266,44 @@ class ViewShopActivity : AppCompatActivity() {
 
                     // Check if the ID exists in the list
                     if (shopIdsList.contains(shopIdString)) {
-                        // Remove the specific Shop Id
+                        // Remove the specific Shop Id from the list
                         val updatedShopIds = shopIdsList.filter { it != shopIdString }.joinToString(", ")
 
                         // Update the "Shop Id" field with the modified list
                         child.ref.child("Shop Id").setValue(updatedShopIds)
                             .addOnSuccessListener {
-                                Log.d("DeleteShopData", "Deleted Shop Id from ${child.key} path")
+                                Log.d("DeleteShopData", "Deleted Shop Id $shopIdString from ${child.key} path in Addresses")
                             }
                             .addOnFailureListener { e ->
-                                Log.e("DeleteShopData", "Failed to delete Shop Id: ${e.message}")
+                                Log.e("DeleteShopData", "Failed to delete Shop Id $shopIdString from Addresses: ${e.message}")
                             }
                     }
                 }
             }
+        }.addOnFailureListener { e ->
+            Log.e("DeleteShopData", "Failed to retrieve Addresses: ${e.message}")
         }
+        // Reference to the "Delivery Details" path
+        val deliveryDetailsRef = FirebaseDatabase.getInstance().getReference("Delivery Details")
 
+        // Check for shopId match and delete the entry only if shopId matches
+        deliveryDetailsRef.get().addOnSuccessListener { snapshot ->
+            for (child in snapshot.children) {
+                val shopIdInDetails = child.key // The shopId in Delivery Details is the key of each child
+                if (shopIdInDetails == shopIdString) {
+                    // Delete the specific shopId entry from Delivery Details
+                    child.ref.removeValue()
+                        .addOnSuccessListener {
+                            Log.d("DeleteShopData", "Deleted shopId $shopIdString from Delivery Details")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("DeleteShopData", "Failed to delete shopId $shopIdString from Delivery Details: ${e.message}")
+                        }
+                }
+            }
+        }.addOnFailureListener { e ->
+            Log.e("DeleteShopData", "Failed to retrieve Delivery Details: ${e.message}")
+        }
         val adminsRef = FirebaseDatabase.getInstance().getReference("Admins")
 
 // Iterate through each user under "Admins"
@@ -260,5 +343,8 @@ class ViewShopActivity : AppCompatActivity() {
                     Log.e("ShopSearchActivity", "Failed to store Shop ID: ${task.exception?.message}")
                 }
             }
+    }
+    companion object {
+        private const val REQUEST_WRITE_PERMISSION = 100
     }
 }

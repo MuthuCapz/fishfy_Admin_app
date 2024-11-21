@@ -6,12 +6,7 @@
     <item
         android:id="@+id/option_20kg"
         android:title="20kg" />
-    <item
-        android:id="@+id/option_500g"
-        android:title="500g" />
-    <item
-        android:id="@+id/option_250g"
-        android:title="250g" />
+
     <item
         android:id="@+id/option_50kg"
         android:title="50kg" />

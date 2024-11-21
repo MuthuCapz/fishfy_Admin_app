@@ -8,6 +8,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -32,7 +33,8 @@ class SubMenuItemAdapter(
     private val context: Context,
     private var items: List<Any>,
     private val databaseReference: DatabaseReference,
-    private val noProductTextView: TextView
+    private val noProductTextView: TextView,
+    private val button: Button,
 ) : RecyclerView.Adapter<SubMenuItemAdapter.AllItemViewHolder>() {
 
     init {
@@ -64,16 +66,21 @@ class SubMenuItemAdapter(
         updateNoProductVisibility()
         notifyDataSetChanged()
     }
+
     private fun updateNoProductVisibility() {
         // Initially, set the TextView to invisible
         noProductTextView.visibility = View.INVISIBLE
+        button.visibility = View.INVISIBLE
 
         // Delay for 3 seconds before making the TextView visible if the list is empty
         Handler(Looper.getMainLooper()).postDelayed({
             if (items.isEmpty()) {
                 noProductTextView.visibility = View.VISIBLE // Show "NoProduct" message
+                button.visibility = View.GONE
+
             } else {
                 noProductTextView.visibility = View.GONE // Hide the message if there are items
+                button.visibility = View.VISIBLE
             }
         }, 1600) // 3000 milliseconds = 3 seconds
     }

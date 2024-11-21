@@ -121,7 +121,7 @@ class SubInventoryAdapter(private val context: Context,  private val onDataFetch
                     })
 
                     // Fetch DiscountItem items from the shop-specific path
-                    val discountItemsRef = database.getReference("Shops").child(shopName).child("Discount-items")
+                    val discountItemsRef = database.getReference("Shops").child(shopName).child("Products")
                     discountItemsRef.addValueEventListener(object : ValueEventListener {
                         @SuppressLint("NotifyDataSetChanged")
                         override fun onDataChange(dataSnapshot: DataSnapshot) {

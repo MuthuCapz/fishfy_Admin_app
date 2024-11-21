@@ -93,7 +93,7 @@ class InventoryAdapter(private val context: Context,  private val onDataFetched:
                 if (shopName != null) {
                     // Fetch RetrieveItem items from the shop-specific path
                     val productsRef = database.getReference("Shops").child(shopName).child("Products")
-                    productsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    productsRef.addValueEventListener(object : ValueEventListener {
                         @SuppressLint("NotifyDataSetChanged")
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             Log.d("InventoryAdapter", "onDataChange called")
@@ -123,7 +123,7 @@ class InventoryAdapter(private val context: Context,  private val onDataFetched:
 
                     // Fetch DiscountItem items from the shop-specific path
                     val discountItemsRef = database.getReference("Shops").child(shopName).child("Products")
-                    discountItemsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    discountItemsRef.addValueEventListener(object : ValueEventListener {
                         @SuppressLint("NotifyDataSetChanged")
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             // Clear existing list to avoid duplicate accumulation on each fetch

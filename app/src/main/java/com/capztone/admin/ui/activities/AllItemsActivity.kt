@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ import com.capztone.admin.databinding.DialogDeleteConfirmationBinding
 import com.capztone.admin.databinding.SkuExistingDeleteBinding
 import com.capztone.admin.models.DiscountItem
 import com.capztone.admin.models.Order
+import com.capztone.admin.utils.FirebaseAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
@@ -56,16 +58,8 @@ class AllItemsActivity : AppCompatActivity() {
         // Initialize Firebase
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference
-        auth = FirebaseAuth.getInstance()
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
-        }
+auth = FirebaseAuthUtil.auth
+
         // Show loading indicator
         binding.progress.visibility = View.VISIBLE
 
@@ -78,29 +72,26 @@ class AllItemsActivity : AppCompatActivity() {
         }, 1300)
         // Initialize RecyclerView and Adapter for menu items
         val noProductTextView = findViewById<TextView>(R.id.noProductTextView)
-        adapter = MenuItemAdapter(this, listOf(), databaseReference, noProductTextView)
+        val button = findViewById<Button>(R.id.button)
+        adapter = MenuItemAdapter(this, listOf(), databaseReference, noProductTextView, button)
         binding.allItemRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.allItemRecyclerView.adapter = adapter
 
         // Initialize RecyclerView and Adapter for order details
-        orderDetailsAdapter = OrderDetailsAdapter()
-        binding.allItemRecyclerView1.layoutManager = LinearLayoutManager(this)
-        binding.allItemRecyclerView1.adapter = orderDetailsAdapter
-        loadProcessedItems()
 
         retrieveMenuItem()
 
-        retrieveOrderDetails()
         retrieveShopName()
 
         // Back button click listener
         binding.BackButton.setOnClickListener {
             finish()
         }
-
-        binding.button.setOnClickListener {
-            storeItemsInProducts()
+        binding.button.setOnClickListener{
+            val intent = Intent(this, Inventory::class.java)
+            startActivity(intent)
         }
+
     }
 
     private fun storeItemsInProducts() {
@@ -152,10 +143,8 @@ class AllItemsActivity : AppCompatActivity() {
                     // Store non-discount items in the "Products" path
                     productsRef.setValue(allItems)
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Items stored in Products successfully", Toast.LENGTH_SHORT).show()
                             // Navigate to Inventory page
-                            val intent = Intent(this, Inventory::class.java)
-                            startActivity(intent)
+
                         }
                         .addOnFailureListener { e ->
                             Log.e("StoreItems", "Failed to store items in Products: $e")
@@ -171,167 +160,7 @@ class AllItemsActivity : AppCompatActivity() {
         }
     }
 
-    private fun synchronizeQuantities() {
-        for (order in orderDetailsAdapter.getOrders()) {
-            val orderEnglishName = order.foodNames?.toString()?.split("/")?.get(0)?.trim() ?: ""
-            val foodQuantities = order.foodQuantities.map { it.toIntOrNull() ?: 0 }
 
-            for ((index, foodQuantity) in foodQuantities.withIndex()) {
-                for (menuItem in menuItems) {
-                    menuItem.foodName?.let { names ->
-                        val menuItemEnglishName = names.toString().split(",")[0].trim()
-
-                        if (menuItemEnglishName == orderEnglishName) {
-                            val numericPart = menuItem.quantity?.replace("[^0-9]".toRegex(), "")?.toIntOrNull() ?: 0
-                            val unitPart = menuItem.quantity?.replace("[0-9]".toRegex(), "")?.trim() ?: ""
-
-                            val newQuantity = numericPart - foodQuantity
-
-                            if (newQuantity >= 0) {
-                                val newQuantityWithUnit = newQuantity.toString() + unitPart
-                                menuItem.quantity = newQuantityWithUnit
-                                updateQuantityInFirebase(menuItem.key, newQuantityWithUnit)
-
-                                order.itemPushKey?.let { pushKey ->
-                                    if (!processItems.contains(pushKey)) {
-                                        processItems.add(pushKey)
-                                        saveProcessedItems()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    private fun saveProcessedItems() {
-        val database = FirebaseDatabase.getInstance().getReference("ProcessOrders")
-        database.setValue(processItems.toList()).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Toast.makeText(this, "Processed items saved to Firebase", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Failed to save processed items", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-    private fun loadProcessedItems() {
-        val database = FirebaseDatabase.getInstance().getReference("ProcessOrders")
-        database.get().addOnCompleteListener { task ->
-            if (task.isSuccessful && task.result.exists()) {
-                val items = task.result.getValue(List::class.java) as? List<String> ?: emptyList()
-                processItems.clear()
-                processItems.addAll(items)
-            }
-        }
-    }
-
-
-    private fun updateQuantityInFirebase(menuItemKey: String?, newQuantity: String) {
-        menuItemKey?.let { key ->
-
-            // Reference to the "Delivery Details" path to get the shop name
-            val generalAdminRef: DatabaseReference = database.reference.child("Delivery Details")
-
-            // Listener to get the shopName
-            generalAdminRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    // Retrieve the shop name
-                    val shopName = snapshot.child("Shop Id").getValue(String::class.java)
-                    shopName?.let { name ->
-
-                        // Reference to the shop's root path
-                        val shopRef = database.reference.child("Shops").child(name)
-
-                        // First, check the "discount" path
-                        val discountRef = shopRef.child("discount")
-                        discountRef.child(key).addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(discountSnapshot: DataSnapshot) {
-                                if (discountSnapshot.exists()) {
-                                    // If the SKU ID exists in "discount", update the quantity
-                                    discountSnapshot.ref.child("quantity").setValue(newQuantity)
-                                        .addOnSuccessListener {
-                                            Log.d("FirebaseUpdate", "Quantity updated successfully in discount")
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("FirebaseUpdate", "Failed to update quantity in discount: $e")
-                                        }
-                                } else {
-                                    // If not found in discount, check other paths
-                                    checkOtherMenuPaths(shopRef, key, newQuantity)
-                                }
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                                Log.e("FirebaseUpdate", "Error fetching discount data: $error")
-                            }
-                        })
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    // Handle Firebase error
-                    Log.e("FirebaseUpdate", "Failed to retrieve shop name: $error")
-                }
-            })
-        }
-    }
-
-    private fun checkOtherMenuPaths(shopRef: DatabaseReference, menuItemKey: String, newQuantity: String) {
-        // List to hold other child paths except "Products"
-        val childPaths = mutableListOf<DatabaseReference>()
-
-        // Fetch all child paths under the shop except "Products"
-        shopRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Loop through all children under the shop path
-                for (childSnapshot in dataSnapshot.children) {
-                    val childName = childSnapshot.key
-                    // Exclude "Products"
-                    if (childName != "Products" && childName != "discount" && childName!="Discount-items") {
-                        childPaths.add(shopRef.child(childName!!))
-                    }
-                }
-
-                // Function to search and update quantity once the correct category is found
-                fun searchAndUpdateQuantity(menuRef: DatabaseReference, onFound: (Boolean) -> Unit) {
-                    menuRef.child(menuItemKey).addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot.exists()) {
-                                // If the SKU ID exists in this category, update the quantity
-                                snapshot.ref.child("quantity").setValue(newQuantity)
-                                    .addOnSuccessListener {
-                                        Log.d("FirebaseUpdate", "Quantity updated successfully in ${menuRef.key}")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("FirebaseUpdate", "Failed to update quantity: $e")
-                                    }
-                                onFound(true) // Indicate that the category was found
-                            } else {
-                                onFound(false) // Continue searching in the next category
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            Log.e("FirebaseUpdate", "Error fetching data: $error")
-                        }
-                    })
-                }
-
-                // Loop through the filtered categories and update the correct one
-                for (menuRef in childPaths) {
-                    searchAndUpdateQuantity(menuRef) { found ->
-                        if (found) return@searchAndUpdateQuantity // Stop searching once the correct category is found
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle Firebase error
-                Log.e("FirebaseUpdate", "Error retrieving child paths: $error")
-            }
-        })
-    }
 
 
 
@@ -375,7 +204,7 @@ class AllItemsActivity : AppCompatActivity() {
                         val shopRef = database.reference.child("Shops").child(name)
 
                         // Listener to get all child paths except "Products" and "discount"
-                        shopRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        shopRef.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 val menuRefs = mutableListOf<DatabaseReference>()
 
@@ -396,7 +225,7 @@ class AllItemsActivity : AppCompatActivity() {
 
                                 // Method to handle data retrieval from menu paths
                                 fun fetchMenuItems(menuRef: DatabaseReference, itemList: MutableList<AllMenu>, onItemsLoaded: () -> Unit) {
-                                    menuRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    menuRef.addValueEventListener(object : ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
                                             for (foodSnapshot in snapshot.children) {
                                                 val menuItem = foodSnapshot.getValue(AllMenu::class.java)
@@ -433,6 +262,7 @@ class AllItemsActivity : AppCompatActivity() {
 
                                             updateAdapter() // Update after all menus are loaded
 
+
                                         }
                                     }
                                 }
@@ -440,7 +270,7 @@ class AllItemsActivity : AppCompatActivity() {
                                 // Fetch discount items if "discount" was included
                                 val discountRef = shopRef.child("discount")
                                 if (dataSnapshot.hasChild("discount")) {
-                                    discountRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    discountRef.addValueEventListener(object : ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
                                             val discountList = mutableListOf<DiscountItem>()
                                             for (foodSnapshot in snapshot.children) {
@@ -461,6 +291,7 @@ class AllItemsActivity : AppCompatActivity() {
                                             discountItems.addAll(discountList)
 
                                             updateAdapter()
+
 
                                         }
 
@@ -495,75 +326,13 @@ class AllItemsActivity : AppCompatActivity() {
         allItems.addAll(menu1Items)
         allItems.addAll(discountItems)
         adapter.updateItems(allItems)
+        storeItemsInProducts()
+
 
     }
 
 
-    private fun retrieveOrderDetails() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        currentUser?.let { user ->
-            val userId = auth.currentUser?.uid
 
-            if (userId == null) {
-                Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-            // Reference to the "Admins" node to retrieve the shop name
-            val adminRef: DatabaseReference = database.reference.child("Delivery Details")
-
-            adminRef.child("Shop Id").get().addOnSuccessListener { dataSnapshot ->
-                val shopName = dataSnapshot.getValue(String::class.java)
-                if (shopName != null) {
-                    // If the shop name exists, proceed with retrieving the order details
-                    val orderDetailsRef: DatabaseReference = database.reference.child("OrderDetails")
-
-                    orderDetailsRef.addValueEventListener(object : ValueEventListener {
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            val orders = mutableListOf<Order>()
-                            for (orderSnapshot in dataSnapshot.children) {
-                                val shopNamesList = orderSnapshot.child("shopNames").getValue(object : GenericTypeIndicator<ArrayList<String>>() {})
-                                val shopIndex = shopNamesList?.indexOf(shopName)
-                                if (shopIndex != null && shopIndex != -1) {
-                                    val foodNamesSnapshot = orderSnapshot.child("foodNames")
-                                    val foodQuantitiesSnapshot = orderSnapshot.child("foodQuantities")
-
-                                    val foodNames: MutableList<String> = mutableListOf()
-                                    val foodQuantities: MutableList<String> = mutableListOf()
-
-                                    for (foodNameSnapshot in foodNamesSnapshot.children) {
-                                        foodNames.add(foodNameSnapshot.value.toString())
-                                    }
-
-                                    for (foodQuantitySnapshot in foodQuantitiesSnapshot.children) {
-                                        foodQuantities.add(foodQuantitySnapshot.value.toString())
-                                    }
-
-                                    val order = Order(foodNames, foodQuantities, orderSnapshot.key ?: "")
-                                    orders.add(order)
-                                }
-                            }
-                            orderDetailsAdapter.setOrders(orders)
-                           // synchronizeQuantities() // Synchronize quantities after fetching order details
-                        }
-
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            Log.d("DatabaseError", "Error: ${databaseError.message}")
-                            Toast.makeText(
-                                this@AllItemsActivity,
-                                "Order Data Not Fetching Error",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    })
-                } else {
-                    Toast.makeText(this, "Shop name not found", Toast.LENGTH_SHORT).show()
-                }
-            }.addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to retrieve shop name: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
     fun  showDeleteConfirmationDialog(skuId: String) {
         val dialog = Dialog(this)
 

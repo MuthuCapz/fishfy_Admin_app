@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.capztone.admin.R
 import com.capztone.admin.databinding.ActivityGeneralAddItemBinding
 import com.capztone.admin.models.AllMenu
+import com.capztone.admin.utils.FirebaseAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
@@ -40,7 +41,7 @@ class GeneralAddItemActivity : AppCompatActivity() {
     private lateinit var Quantity: String
     private lateinit var stock: String
     private lateinit var category: String
-    private lateinit var PQuantity: String
+    private var PQuantity: String = "1 Kg"
     private var foodImageUri: Uri? = null
     private lateinit var categoryName: String
     private lateinit var auth: FirebaseAuth
@@ -58,21 +59,11 @@ class GeneralAddItemActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //Initialize Firebase
-        auth = FirebaseAuth.getInstance()
+auth = FirebaseAuthUtil.auth
         // Initialize Firebase database Instance
         database = FirebaseDatabase.getInstance()
 
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
-        }
+
         categoryName = intent.getStringExtra("categoryName") ?: ""
         // Use categoryName as needed, e.g., display it in a TextView
         val categoryTextView: TextView = findViewById(R.id.category)
@@ -108,12 +99,6 @@ class GeneralAddItemActivity : AppCompatActivity() {
         val maxNumber = 500 // Maximum value
         val minNumber = 1 // Minimum value
 
-// Initialize productQty to combine quantity and unit
-        var productQty = "$currentNumber Kg" // Default initial value
-
-// Set initial value in EditText for quantity
-        numberEditText.setText(currentNumber.toString())
-
 // Unit options for dropdown (AutoCompleteTextView)
         val units = listOf("Kg", "g") // Units: "Kg" is the default
 
@@ -121,14 +106,13 @@ class GeneralAddItemActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, units)
         unitTextView.setAdapter(adapter)
 
-// Set default text as "Kg" in unit dropdown
-        unitTextView.setText("Kg", false)
-
         // Function to update the combined product quantity and unit
         fun updateProductQty() {
             val unit = unitTextView.text.toString()
-            productQty = "$currentNumber $unit"
-            println("Updated productQty: $productQty") // For debugging, log the updated value
+            val qty=numberEditText.text.toString()
+            val productQty = "$qty $unit"
+            println("Updated productQty: $productQty")
+            PQuantity=productQty// For debugging, log the updated value
         }
 
 // Show dropdown when unit field is clicked
@@ -210,7 +194,6 @@ class GeneralAddItemActivity : AppCompatActivity() {
             foodDescription = binding.editTextDescription.text.toString().trim()
             Quantity = binding.quantity.text.toString().trim()
             category = binding.category.text.toString().trim()
-            PQuantity = productQty // Combined quantity and unit
 
             // Clear previous entries
             foodNames.clear()
@@ -233,7 +216,7 @@ class GeneralAddItemActivity : AppCompatActivity() {
             val userId = auth.currentUser?.uid
 
             // Check if all required fields are filled
-            if (foodNames.isNotEmpty() && foodPrice.isNotBlank() && foodDescription.isNotBlank() && Quantity.isNotBlank() && category.isNotBlank() && productQty.isNotBlank()) {
+            if (foodNames.isNotEmpty() && foodPrice.isNotBlank() && foodDescription.isNotBlank() && Quantity.isNotBlank() && category.isNotBlank() && PQuantity.isNotBlank()) {
                 uploadData(userId)
                 Toast.makeText(this, "Item Add Successfully", Toast.LENGTH_SHORT).show()
                 finish()
@@ -308,15 +291,7 @@ class GeneralAddItemActivity : AppCompatActivity() {
                     true
                 }
 
-                R.id.option_500g -> {
-                    binding.quantity.setText("500g")
-                    true
-                }
 
-                R.id.option_250g -> {
-                    binding.quantity.setText("250g")
-                    true
-                }
 
                 R.id.option_50kg -> {
                     binding.quantity.setText("50kg")

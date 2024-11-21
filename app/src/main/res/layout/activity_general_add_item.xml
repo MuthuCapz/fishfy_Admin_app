@@ -53,7 +53,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView16">
 
             <TextView
-                android:id="@+id/categoryTitle"
+                android:id="@+id/category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
@@ -66,36 +66,17 @@
                 android:paddingEnd="8dp"
                 android:text="Category Name"
                 android:textColor="@color/blue"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/category"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginStart="15dp"
-                android:outlineSpotShadowColor="@color/ash"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/edit_text_shape"
-                android:fontFamily="@font/nunito"
-                android:inputType="textMultiLine"
-                android:paddingStart="15dp"
-                android:text="Deal Of The Day"
-                android:padding="10dp"
-                android:gravity="center_vertical"
-                android:textColor="@color/lblack"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/categoryTitle" />
+
             <TextView
                 android:id="@+id/englishTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="5dp"
                 android:layout_weight="1"
@@ -113,6 +94,7 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
+                android:maxLength="100"
                 android:layout_marginEnd="15dp"
                 android:textColor="@color/black"
                 android:autofillHints="name"
@@ -154,6 +136,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="15dp"
                 android:autofillHints="name"
+                android:maxLength="100"
                 android:background="@drawable/edit_text_shape"
                 android:elevation="5dp"
                 android:textSize="16sp"
@@ -196,6 +179,7 @@
                 android:layout_marginEnd="15dp"
                 android:autofillHints="name"
                 android:textColor="@color/black"
+                android:maxLength="100"
                 android:background="@drawable/edit_text_shape"
                 android:elevation="5dp"
                 android:textColorHint="@color/grey"
@@ -235,6 +219,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="15dp"
                 android:autofillHints="name"
+                android:maxLength="100"
                 android:textColorHint="@color/grey"
                 android:background="@drawable/edit_text_shape"
                 android:elevation="5dp"
@@ -309,7 +294,7 @@
                 app:layout_constraintTop_toBottomOf="@id/edittext_FoodPrice" />
             <LinearLayout
                 android:id="@+id/linear"
-                android:layout_width="165dp"
+                android:layout_width="145dp"
                 android:layout_height="55dp"
                 android:orientation="horizontal"
                 app:layout_constraintStart_toStartOf="parent"
@@ -322,7 +307,7 @@
 
                 <EditText
                     android:id="@+id/productQuantity"
-                    android:layout_width="138dp"
+                    android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="1"
@@ -333,7 +318,7 @@
                     android:background="@android:color/transparent" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:background="@drawable/number_picker_shape"
@@ -367,7 +352,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/unit"
-                android:layout_width="180dp"
+                android:layout_width="160dp"
                 android:layout_height="57dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
@@ -501,6 +486,7 @@
                 android:background="@drawable/edit_text_shape"
                 android:fontFamily="@font/nunito"
                 android:textSize="16sp"
+                android:maxLength="6"
                 android:hint="  Total Product Weight"
                 android:textColorHint="@color/grey"
                 android:outlineSpotShadowColor="@color/ash"

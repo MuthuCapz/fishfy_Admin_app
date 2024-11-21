@@ -52,17 +52,7 @@ class ShopSettings : AppCompatActivity() {
 
         // Initialize Firebase Realtime Database
         database = FirebaseDatabase.getInstance().reference
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
-        }
+
         // Initialize Firebase references
         deliveryDetailsRef = FirebaseDatabase.getInstance().getReference("Delivery Details")
         shopNamesRef = FirebaseDatabase.getInstance().getReference("ShopNames")
@@ -86,9 +76,22 @@ class ShopSettings : AppCompatActivity() {
             showDriverDistanceDropdownMenu(it)
         }
         binding.continueButton.setOnClickListener {
-            saveDataToFirebase()
+            val newSlotTime = binding.slotValue.text.toString()
+            val slotTimesList = newSlotTime.lines().map { it.trim() }.filter { it.isNotEmpty() }
 
+            // Check if the user has selected exactly 3 time slots
+            if (slotTimesList.size < 3) {
+                val remainingSlots = 3 - slotTimesList.size
+                Toast.makeText(
+                    this,
+                    "Please select $remainingSlots more time slot(s) to proceed.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                saveDataToFirebase()
+            }
         }
+
 
         binding.time.setOnClickListener {
             showCustomTimePickerDialog()
@@ -267,29 +270,37 @@ class ShopSettings : AppCompatActivity() {
             .create()
 
         confirmButton.setOnClickListener {
-            // Get start time
-            val startHour = startTimePicker.hour
-            val startMinute = startTimePicker.minute
-            startTime.set(Calendar.HOUR_OF_DAY, startHour)
-            startTime.set(Calendar.MINUTE, startMinute)
-
-            // Get end time
-            val endHour = endTimePicker.hour
-            val endMinute = endTimePicker.minute
-            endTime.set(Calendar.HOUR_OF_DAY, endHour)
-            endTime.set(Calendar.MINUTE, endMinute)
-
-            // Format the selected time slot and update UI
-            val formattedTime = formatSlotTime(startTime, endTime)
-            // Check if the formatted time is already in the list
-            if (!timeSlots.contains(formattedTime)) {
-                timeSlots.add(formattedTime)
-                binding.slotValue.setText(timeSlots.joinToString("\n"))
+            if (timeSlots.size >= 3) {
+                Toast.makeText(this, "You can select up to 3 time slots only.", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "This time slot has already been selected.", Toast.LENGTH_SHORT).show()
-            }
+                // Get start time
+                val startHour = startTimePicker.hour
+                val startMinute = startTimePicker.minute
+                startTime.set(Calendar.HOUR_OF_DAY, startHour)
+                startTime.set(Calendar.MINUTE, startMinute)
 
-            alertDialog.dismiss()
+                // Get end time
+                val endHour = endTimePicker.hour
+                val endMinute = endTimePicker.minute
+                endTime.set(Calendar.HOUR_OF_DAY, endHour)
+                endTime.set(Calendar.MINUTE, endMinute)
+
+                // Format the selected time slot and update UI
+                val formattedTime = formatSlotTime(startTime, endTime)
+                // Check if the formatted time is already in the list
+                if (!timeSlots.contains(formattedTime)) {
+                    timeSlots.add(formattedTime)
+                    binding.slotValue.setText(timeSlots.joinToString("\n"))
+                } else {
+                    Toast.makeText(
+                        this,
+                        "This time slot has already been selected.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+                alertDialog.dismiss()
+
         }
 
         cancelButton.setOnClickListener {

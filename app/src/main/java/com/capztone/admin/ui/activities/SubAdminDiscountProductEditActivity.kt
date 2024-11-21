@@ -10,6 +10,7 @@ import android.provider.OpenableColumns
 import android.view.Gravity
 import android.view.MenuInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -31,6 +33,8 @@ class SubAdminDiscountProductEditActivity : AppCompatActivity() {
 
     private lateinit var binding:   ActivitySubAdminDiscountProductEditBinding
     private lateinit var databaseRef: DatabaseReference
+    private var PQuantity: String = "1 Kg"
+
     private var imageUri: String? = null
     private var selectedImageUri: Uri? = null
     private val PICK_IMAGE_REQUEST = 1
@@ -43,16 +47,112 @@ class SubAdminDiscountProductEditActivity : AppCompatActivity() {
 
         // Initialize Firebase reference
         databaseRef = FirebaseDatabase.getInstance().reference
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
+
+        val numberEditText = binding.productQuantity // EditText for quantity
+        val incrementButton = binding.incrementButton
+        val decrementButton = binding.decrementButton
+        val unitTextView = binding.unit // AutoCompleteTextView for unit selection
+
+// Variables for quantity management
+        var currentNumber = 1 // Initial quantity value
+        val maxNumber = 500 // Maximum value
+        val minNumber = 1 // Minimum value
+
+// Initialize productQty to combine quantity and unit
+        var productQty = "$currentNumber Kg" // Default initial value
+
+// Set initial value in EditText for quantity
+
+// Unit options for dropdown (AutoCompleteTextView)
+        val units = listOf("Kg", "g") // Units: "Kg" is the default
+
+// Create an ArrayAdapter for the unit dropdown
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, units)
+        unitTextView.setAdapter(adapter)
+
+// Set default text as "Kg" in unit dropdown
+
+        // Function to update the combined product quantity and unit
+        fun updateProductQty() {
+            val unit = unitTextView.text.toString()
+            val qty=numberEditText.text.toString()
+            productQty = "$qty $unit"
+            println("Updated productQty: $productQty") // For debugging, log the updated value
+            PQuantity=productQty
+        }
+
+// Show dropdown when unit field is clicked
+        unitTextView.setOnClickListener {
+            unitTextView.showDropDown()
+        }
+
+// Listen for changes in the unit selection to update productQty
+        unitTextView.setOnItemClickListener { _, _, _, _ ->
+            updateProductQty()
+        }
+
+// Increment button functionality with validation for unit selection
+        incrementButton.setOnClickListener {
+            if (unitTextView.text.isNullOrBlank()) {
+                // Show error if unit is not selected
+                unitTextView.error = "Please select a unit"
+            } else if (currentNumber < maxNumber) {
+                currentNumber++
+                numberEditText.setText(currentNumber.toString())
+                updateProductQty() // Update productQty when quantity changes
             }
         }
 
+// Decrement button functionality with validation for unit selection
+        decrementButton.setOnClickListener {
+            if (unitTextView.text.isNullOrBlank()) {
+                // Show error if unit is not selected
+                unitTextView.error = "Please select a unit"
+            } else if (currentNumber > minNumber) {
+                currentNumber--
+                numberEditText.setText(currentNumber.toString())
+                updateProductQty() // Update productQty when quantity changes
+            }
+        }
+
+
+        // Validation to ensure quantity and unit are both set
+        fun validateQuantityAndUnit(): Boolean {
+            val quantity = numberEditText.text.toString().toIntOrNull()
+            val unit = unitTextView.text.toString()
+
+            return when {
+                quantity == null || quantity < minNumber -> {
+                    numberEditText.error = "Please enter a valid quantity"
+                    false
+                }
+                unit.isBlank() -> {
+                    unitTextView.error = "Please select a unit"
+                    false
+                }
+                else -> true
+            }
+        }
+
+        binding.quantityoptions.setOnClickListener {
+            showQuantityOptions(it)
+        }
+
+
+
+        ///
+        binding.addItemButton.setOnClickListener {
+            // Call the validation function first
+            if (!validateQuantityAndUnit()) {
+                // If validation fails, stop further processing
+                Toast.makeText(
+                    this,
+                    "Please enter a valid quantity and select a unit",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+        }
         // Retrieve data from the Intent
         val category = intent.getStringExtra("category")
         val skuId = intent.getStringExtra("skuId")
@@ -60,7 +160,9 @@ class SubAdminDiscountProductEditActivity : AppCompatActivity() {
         val prices = intent.getStringExtra("prices")
         val imageUri = intent.getStringExtra("image")
         val quantity = intent.getStringExtra("quantity")
-        val productquantity = intent.getStringExtra("productquantity")
+        val productQuantityString = intent.getStringExtra("productquantity") ?: ""
+// Extract only numeric values using regex
+        val productquantity = productQuantityString.filter { it.isDigit() }
         val disocunts = intent.getStringExtra("discounts")
         val description = intent.getStringExtra("description")
 
@@ -148,7 +250,7 @@ class SubAdminDiscountProductEditActivity : AppCompatActivity() {
 
     private fun retrieveShopName() {
         // Retrieve the shop name from Firebase
-        databaseRef.child("Delivery Details/Shop name").get()
+        databaseRef.child("Delivery Details/Shop Id").get()
             .addOnSuccessListener { dataSnapshot ->
                 val shopName = dataSnapshot.getValue()
                 binding.shopname.text = (shopName ?: "Shop Name Not Available").toString()
@@ -178,8 +280,53 @@ class SubAdminDiscountProductEditActivity : AppCompatActivity() {
         val currentDate = SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault()).format(Date())
 
         // Reference the correct shop path (directly under shop name and skuId in the discount node)
-        val shopRef = databaseRef.child(shopName).child("discount").child(skuId)
+        val shopRef = databaseRef.child("Shops").child(shopName).child("discount").child(skuId)
 
+
+        // Firebase Storage Reference
+        val storageRef = FirebaseStorage.getInstance().reference.child("menu_images/${skuId}.jpg")
+
+        // Check if a new image is selected
+        if (foodImageUri != null) {
+            // Upload the new image to Firebase Storage
+            val uploadTask = storageRef.putFile(foodImageUri!!)
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    throw task.exception!!
+                }
+                // Get the download URL
+                storageRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloadUri = task.result.toString()
+                    // Update the item with the new image URL
+                    updateDiscountItem(shopRef, skuId, downloadUri, currentDate, username)
+                } else {
+                    Toast.makeText(this, "Failed to get download URL", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            // No new image selected, retain the old image URL
+            shopRef.get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    val existingImageUri = snapshot.child("foodImages").getValue(String::class.java) ?: ""
+                    updateDiscountItem(shopRef, skuId, existingImageUri, currentDate, username)
+                } else {
+                    Toast.makeText(this, "Failed to retrieve existing item data", Toast.LENGTH_SHORT).show()
+                }
+            }.addOnFailureListener {
+                Toast.makeText(this, "Failed to fetch existing item", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun updateDiscountItem(
+        shopRef: DatabaseReference,
+        skuId: String,
+        imageUri: String,
+        currentDate: String,
+        username: String
+    ) {
         // Create an ArrayList of food names
         val foodNamesList = arrayListOf(
             binding.editTextFoodName.text.toString(),
@@ -188,33 +335,42 @@ class SubAdminDiscountProductEditActivity : AppCompatActivity() {
             binding.editText3FoodName.text.toString()
         )
 
-        // Create an instance of DiscountItem data class
+        // Get the discount text and format it
+        val discountText = binding.editTextDiscount.text.toString().trim()
+
+        // Format discount to append "%" if it's numeric
+        val formattedDiscount = if (discountText.isNotBlank() && discountText.all { it.isDigit() }) {
+            "$discountText%" // Add "%" if the discount is numeric
+        } else {
+            discountText // Use the original value if not numeric
+        }
+
+        // Create an instance of the DiscountItem data class with the formatted discount
         val discountItem = DiscountItem(
             foodPrices = binding.edittextFoodPrice.text.toString(),
             key = skuId,
             foodNames = foodNamesList,
             foodDescriptions = binding.editTextDescription.text.toString(),
             quantitys = binding.quantitycount.text.toString(),
-            foodImages = imageUri,
+            foodImages = imageUri, // Retain or use the new image URL
             categorys = binding.categoryTextView.text.toString(),
-            discounts = binding.editTextDiscount.text.toString(),
-            productQuantity = binding.productQuantity.text.toString(),
+            discounts = formattedDiscount, // Use the formatted discount value
+
+            productQuantity = PQuantity,
             updatedDate = currentDate,  // Add updated date
             updatedBy = username  // Add the Google username
         )
 
-        // Directly update the item under the same SKU ID
+        // Update the item in Firebase
         shopRef.setValue(discountItem)
             .addOnSuccessListener {
                 Toast.makeText(this, "Item updated successfully", Toast.LENGTH_SHORT).show()
-                // Navigate to MainActivity after a short delay
                 navigateToMainActivity()
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to update item", Toast.LENGTH_SHORT).show()
             }
     }
-
     private fun showQuantityOptions(view: View) {
         // Create a PopupMenu
         val popupMenu = PopupMenu(this, view)
@@ -233,14 +389,7 @@ class SubAdminDiscountProductEditActivity : AppCompatActivity() {
                     binding.quantitycount.setText("20kg")
                     true
                 }
-                R.id.option_500g -> {
-                    binding.quantitycount.setText("500g")
-                    true
-                }
-                R.id.option_250g -> {
-                    binding.quantitycount.setText("250g")
-                    true
-                }
+
                 R.id.option_50kg -> {
                     binding.quantitycount.setText("50kg")
                     true
@@ -256,7 +405,7 @@ class SubAdminDiscountProductEditActivity : AppCompatActivity() {
     }
 
     private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, SubAdminMainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)

@@ -11,6 +11,7 @@ import android.provider.OpenableColumns
 import android.view.Gravity
 import android.view.MenuInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +19,7 @@ import com.capztone.admin.R
 import com.capztone.admin.databinding.ActivityGeneralDiscountBinding
 
 import com.capztone.admin.models.DiscountItem
+import com.capztone.admin.utils.FirebaseAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
@@ -34,7 +36,8 @@ class GeneralDiscount : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private var foodImageUri: Uri? = null
-    private lateinit var PQuantity: String
+    private var PQuantity: String = "1 Kg" // Ensure it's initialized
+
     private var selectedImageUri: Uri? = null // Store the Uri of the selected image
     private val PICK_IMAGE_REQUEST = 1
 
@@ -48,31 +51,108 @@ class GeneralDiscount : AppCompatActivity() {
         setContentView(binding.root)
 
         // Initialize Firebase
-        auth = FirebaseAuth.getInstance()
+auth = FirebaseAuthUtil.auth
         database = FirebaseDatabase.getInstance()
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
-        }
+
         // Finish Activity
         binding.backButton.setOnClickListener {
             finish()
         }
 
-        binding.addItemButton.setOnClickListener {
-            uploadData()
-        }
+
         // Inside your onCreateView or onViewCreated
         binding.selectImage.setOnClickListener {
             openGallery()
         }
+        // References to views
+        val numberEditText = binding.productQuantity // EditText for quantity
+        val incrementButton = binding.incrementButton
+        val decrementButton = binding.decrementButton
+        val unitTextView = binding.unit // AutoCompleteTextView for unit selection
+
+// Variables for quantity management
+        var currentNumber = 1 // Initial quantity value
+        val maxNumber = 500 // Maximum value
+        val minNumber = 1 // Minimum value
+
+// Unit options for dropdown (AutoCompleteTextView)
+        val units = listOf("Kg", "g") // Units: "Kg" is the default
+
+// Create an ArrayAdapter for the unit dropdown
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, units)
+        unitTextView.setAdapter(adapter)
+
+        // Function to update the combined product quantity and unit
+        fun updateProductQty() {
+            val unit = unitTextView.text.toString()
+            val qty=numberEditText.text.toString()
+            val productQty = "$qty $unit"
+            println("Updated productQty: $productQty")
+            PQuantity=productQty// For debugging, log the updated value
+        }
+
+// Show dropdown when unit field is clicked
+        unitTextView.setOnClickListener {
+            unitTextView.showDropDown()
+        }
+
+// Listen for changes in the unit selection to update productQty
+        unitTextView.setOnItemClickListener { _, _, _, _ ->
+            updateProductQty()
+        }
+
+// Increment button functionality with validation for unit selection
+        incrementButton.setOnClickListener {
+            if (unitTextView.text.isNullOrBlank()) {
+                // Show error if unit is not selected
+                unitTextView.error = "Please select a unit"
+            } else if (currentNumber < maxNumber) {
+                currentNumber++
+                numberEditText.setText(currentNumber.toString())
+                updateProductQty() // Update productQty when quantity changes
+            }
+        }
+
+// Decrement button functionality with validation for unit selection
+        decrementButton.setOnClickListener {
+            if (unitTextView.text.isNullOrBlank()) {
+                // Show error if unit is not selected
+                unitTextView.error = "Please select a unit"
+            } else if (currentNumber > minNumber) {
+                currentNumber--
+                numberEditText.setText(currentNumber.toString())
+                updateProductQty() // Update productQty when quantity changes
+            }
+        }
+
+
+        // Validation to ensure quantity and unit are both set
+        fun validateQuantityAndUnit(): Boolean {
+            val quantity = numberEditText.text.toString().toIntOrNull()
+            val unit = unitTextView.text.toString()
+
+            return when {
+                quantity == null || quantity < minNumber -> {
+                    numberEditText.error = "Please enter a valid quantity"
+                    false
+                }
+                unit.isBlank() -> {
+                    unitTextView.error = "Please select a unit"
+                    false
+                }
+                else -> true
+            }
+        }
+        binding.addItemButton.setOnClickListener {
+            // Call the validation function first
+            if (!validateQuantityAndUnit()) {
+                // If validation fails, stop further processing
+                Toast.makeText(this, "Please enter a valid quantity and select a unit", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            uploadData()
+        }
+
         binding.quantityoptions.setOnClickListener {
             showQuantityOptions(it)
         }
@@ -98,15 +178,7 @@ class GeneralDiscount : AppCompatActivity() {
                     true
                 }
 
-                R.id.option_500g -> {
-                    binding.quantity.setText("500g")
-                    true
-                }
 
-                R.id.option_250g -> {
-                    binding.quantity.setText("250g")
-                    true
-                }
 
                 R.id.option_50kg -> {
                     binding.quantity.setText("50kg")
@@ -195,7 +267,16 @@ class GeneralDiscount : AppCompatActivity() {
         val Quantitys = binding.quantity.text.toString().trim()
         val categorys = binding.category.text.toString().trim()
         val discounts = binding.edittextDiscount.text.toString().trim()
-        PQuantity = binding.productQuantity.text.toString().trim()
+        // Ensure discounts value is numeric and prepend "%" if valid
+        val formattedDiscount = if (discounts.isNotBlank() && discounts.all { it.isDigit() }) {
+            "$discounts%"  // Adds "%" to the numeric discount
+        } else {
+            discounts // Keeps original text if not numeric
+        }
+        if (PQuantity.isBlank()) {
+            Toast.makeText(this, "Please set the quantity and unit before uploading", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         if (foodNamesList.isNotEmpty() && foodPrices.isNotBlank() && foodDescriptions.isNotBlank() && Quantitys.isNotBlank() && categorys.isNotBlank() && discounts.isNotBlank() && PQuantity.isNotBlank()) {
             val userId = auth.currentUser?.uid
@@ -240,7 +321,7 @@ class GeneralDiscount : AppCompatActivity() {
                                             Quantitys,
                                             downloadUrl.toString(),
                                             categorys,
-                                            discounts,
+                                            formattedDiscount,
                                             PQuantity,
                                             CreatedDate = currentDate,  // Store the current date
                                             CreatedBy = username   // Store the Google email (username)

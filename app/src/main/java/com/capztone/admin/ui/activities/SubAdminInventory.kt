@@ -30,6 +30,7 @@ import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import com.capztone.admin.adapters.SubInventoryAdapter
 import com.capztone.admin.databinding.ActivitySubAdminInventoryBinding
+import com.capztone.admin.utils.FirebaseAuthUtil
 
 import java.io.OutputStream
 
@@ -47,7 +48,7 @@ class SubAdminInventory : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySubAdminInventoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        auth = FirebaseAuth.getInstance()
+auth = FirebaseAuthUtil.auth
 
         // Fetch the shop name for the current user
         fetchShopName()
@@ -57,15 +58,7 @@ class SubAdminInventory : AppCompatActivity() {
         binding.Addmore.setOnClickListener {
             saveDataToFirebase()
         }
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
-        }
+
         // Show loading indicator
         binding.progress.visibility = View.VISIBLE
 

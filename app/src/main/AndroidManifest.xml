@@ -13,6 +13,7 @@
         android:icon="@drawable/admin"
         android:label="Admin"
         android:supportsRtl="true"
+        android:name=".ui.activities.MyApplication"
         android:theme="@style/Theme.Admin"
         tools:targetApi="34">
         <activity

@@ -12,10 +12,6 @@ import com.capztone.admin.databinding.SubOrderDetailsBinding
 import com.capztone.admin.models.OrderDetails
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import kotlin.math.roundToInt
 
 class SubOrderAdapter(
     private var orderDetailsList: MutableList<OrderDetails>,
@@ -209,7 +205,6 @@ class SubOrderAdapter(
             }
         }
 
-        // Example adjustment to reduce transaction usage and better error handling
         private fun reduce(orderId: String, shopName: String) {
             val orderDetails = orderDetailsList.find { it.itemPushKey == orderId }
             if (orderDetails == null) {
@@ -219,45 +214,31 @@ class SubOrderAdapter(
 
             // Get the SKU list and quantities
             val skuIds = orderDetails.skuList ?: return
-            val quantities = orderDetails.foodQuantities ?: return
+            val quantities = orderDetails.skuUnitQuantities ?: return
 
-            // Ensure we have at least one SKU ID and quantity to work with
             if (skuIds.isEmpty() || quantities.isEmpty() || skuIds.size != quantities.size) {
                 showToast("No SKU IDs or quantities available")
                 return
             }
 
-            // Log the SKU IDs and their corresponding quantities for debugging
-            for (i in skuIds.indices) {
-                val skuId = skuIds[i]
-                val quantityToReduce = quantities[i].toString().toDoubleOrNull() ?: continue  // Skip if quantity can't be parsed
+            skuIds.forEachIndexed { index, skuId ->
+                val quantityToReduceStr = quantities[index]
+                val quantityToReduce = parseQuantity(quantityToReduceStr)
+                if (quantityToReduce == null) {
+                    Log.e("ReduceFunction", "Invalid quantity format: $quantityToReduceStr")
+                    return@forEachIndexed
+                }
 
-                // Log the SKU ID and its quantity for debugging
-                Log.d("ReduceFunction", "Processing SKU ID: $skuId with quantity to reduce: $quantityToReduce")
-
-                // Reference to the shop
                 val shopRef = FirebaseDatabase.getInstance().getReference("Shops").child(shopName)
-
-                // Fetch the SKU from the shop
                 shopRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        var skuFound = false
+                        val skuSnapshot = dataSnapshot.children
+                            .flatMap { it.children }
+                            .firstOrNull { it.key == skuId }
 
-                        // Iterate through all categories and their SKUs
-                        for (categorySnapshot in dataSnapshot.children) {
-                            for (skuSnapshot in categorySnapshot.children) {
-                                if (skuSnapshot.key == skuId) {
-                                    skuFound = true
-                                    updateQuantity(skuSnapshot.ref, quantityToReduce, skuId)
-                                    break // Exit the inner loop once the SKU is found and processed
-                                }
-                            }
-                            if (skuFound) break // Exit the outer loop if SKU is found
-                        }
-
-                        if (!skuFound) {
-                            // SKU ID not found in the shop
-                            //Log.e("ReduceFunction", "SKU ID $skuId not found in shop: $shopName")
+                        if (skuSnapshot != null) {
+                            updateQuantity(skuSnapshot.ref, quantityToReduce, skuId)
+                        } else {
                             showToast("SKU ID $skuId not found in shop: $shopName")
                         }
                     }
@@ -273,65 +254,51 @@ class SubOrderAdapter(
             skuRef.get().addOnSuccessListener { snapshot ->
                 val currentQuantityStr = snapshot.child("quantity").getValue(String::class.java)
                     ?: snapshot.child("quantitys").getValue(String::class.java)
-                val currentQuantityValue = currentQuantityStr?.removeSuffix("kg")?.toDoubleOrNull()
 
-                Log.d("UpdateQuantity", "Current quantity string: $currentQuantityStr, Current quantity value: $currentQuantityValue")
+                val currentQuantityValue = parseQuantity(currentQuantityStr)
 
                 if (currentQuantityValue == null) {
-                    Log.e("UpdateQuantity", "Current quantity is null or invalid for SKU: $skuId")
-                    showToast("Current quantity is null or invalid for SKU: $skuId")
+                    Log.e("UpdateQuantity", "Invalid current quantity for SKU: $skuId")
+                    showToast("Invalid current quantity for SKU: $skuId")
                     return@addOnSuccessListener
                 }
 
                 val newQuantityValue = currentQuantityValue - quantityToReduce
-                Log.d("QuantityCheck", "Current Quantity Value: $currentQuantityValue")
-                Log.d("QuantityCheck", "Quantity to Reduce: $quantityToReduce")
-                Log.d("QuantityCheck", "New Quantity Value: $newQuantityValue")
 
                 if (newQuantityValue < 0) {
-                    Log.e("UpdateQuantity", "New quantity would be negative for SKU: $skuId")
                     showToast("New quantity would be negative for SKU: $skuId")
                     return@addOnSuccessListener
                 }
-                if (newQuantityValue == 0.0) {
-                    // Don't delete the item, just update the quantity to 0kg
-                    Log.d("UpdateQuantity", "Quantity reached zero for SKU: $skuId. No deletion performed.")
 
-                    // Set the quantity to 0kg instead of deleting the item
-                    skuRef.child("quantity").setValue("0kg").addOnCompleteListener { updateQuantityTask ->
-                        if (updateQuantityTask.isSuccessful) {
-                            showToast("Quantity for SKU $skuId updated to 0kg without deletion.")
-                            Log.d("UpdateQuantity", "Quantity for SKU $skuId updated to 0kg.")
-                        } else {
-                            Log.e("UpdateQuantity", "Failed to update quantity to 0kg for SKU: $skuId: ${updateQuantityTask.exception?.message}")
-                            showToast("Failed to update quantity to 0kg for SKU: $skuId")
-                        }
-                    }
+                val quantityField = if (snapshot.hasChild("quantity")) "quantity" else "quantitys"
+                val updatedQuantity = if (newQuantityValue == 0.0) "0kg" else formatQuantity(newQuantityValue)
 
-                } else {
-                    // Round the new quantity value to the nearest whole number
-                    val roundedQuantityValue = newQuantityValue.roundToInt()
-
-                    // Determine which child to update based on which one exists
-                    val quantityField = if (snapshot.hasChild("quantity")) "quantity" else "quantitys"
-
-                    skuRef.child(quantityField).setValue("${roundedQuantityValue}kg").addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            // showToast("Quantity reduced successfully for SKU: $skuId!")
-                        } else {
-                            Log.e(
-                                "UpdateQuantity",
-                                "Failed to reduce quantity for SKU: $skuId: ${task.exception?.message}"
-                            )
-                            showToast("Failed to reduce quantity for SKU: $skuId: ${task.exception?.message}")
-                        }
+                skuRef.child(quantityField).setValue(updatedQuantity).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                       // showToast("Quantity updated successfully for SKU: $skuId")
+                    } else {
+                       // showToast("Failed to update quantity for SKU: $skuId")
                     }
                 }
-
             }.addOnFailureListener { e ->
-                Log.e("UpdateQuantity", "Failed to get current quantity: ${e.message}")
-                showToast("Failed to get current quantity: ${e.message}")
+                Log.e("UpdateQuantity", "Failed to fetch current quantity for SKU: $skuId: ${e.message}")
+                showToast("Failed to fetch current quantity: ${e.message}")
             }
+        }
+
+        // Helper to parse quantities in various formats
+        private fun parseQuantity(quantityStr: String?): Double? {
+            if (quantityStr.isNullOrEmpty()) return null
+            return when {
+                quantityStr.endsWith("kg") -> quantityStr.removeSuffix("kg").toDoubleOrNull()
+                quantityStr.endsWith("g") -> quantityStr.removeSuffix("g").toDoubleOrNull()?.div(1000) // Convert grams to kg
+                else -> quantityStr.toDoubleOrNull()
+            }
+        }
+
+        // Helper to format quantities
+        private fun formatQuantity(quantity: Double): String {
+            return if (quantity < 1) "${(quantity * 1000).toInt()}g" else "${quantity}kg"
         }
 
         private fun showToast(message: String) {
@@ -369,7 +336,7 @@ class SubOrderAdapter(
         fun bind(orderDetails: OrderDetails) {
             binding.itemPushKey.text = "${orderDetails.itemPushKey ?: "N/A"}"
             binding.foodNames.text = "${orderDetails.foodNames?.joinToString(",") ?: "N/A"}"
-            binding.foodQuantities.text = "${orderDetails.foodQuantities?.joinToString(",") ?: "N/A"}"
+            binding.foodQuantities.text = "${orderDetails.skuUnitQuantities?.joinToString(",") ?: "N/A"}"
             binding.foodPrices.text = "${orderDetails.foodPrices?.joinToString(",") ?: "N/A"}"
             binding.skuid.text = "${orderDetails.skuList?.joinToString(",") ?: "N/A"}"
             binding.shopnames.text = orderDetails.shopNames?.getOrNull(0) ?: "N/A"

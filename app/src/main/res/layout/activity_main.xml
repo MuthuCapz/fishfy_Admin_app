@@ -356,7 +356,7 @@ android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="25dp"
                     android:fontFamily="@font/nunito"
-                    android:text="Categories "
+                    android:text="Add Item By Categories"
                     android:textColor="@color/blue"
                     android:textSize="18sp"
 

@@ -10,12 +10,14 @@ import android.provider.OpenableColumns
 import android.view.Gravity
 import android.view.MenuInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.capztone.admin.R
 import com.capztone.admin.databinding.ActivityProductEditBinding
 import com.capztone.admin.databinding.ActivitySubAdminProductEditBinding
+import com.capztone.admin.utils.FirebaseAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.database.DatabaseReference
@@ -33,6 +35,9 @@ class ProductEditActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private var selectedImageUri: Uri? = null
     private val PICK_IMAGE_REQUEST = 1
+
+    private var PQuantity: String = "1 Kg" // Default value
+
     private var foodImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,13 +45,118 @@ class ProductEditActivity : AppCompatActivity() {
         binding = ActivityProductEditBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Setup status bar and window appearance
-        setupWindowAppearance()
+
 
         // Initialize Firebase Auth and Database reference
-        auth = FirebaseAuth.getInstance()
+auth = FirebaseAuthUtil.auth
         databaseRef = FirebaseDatabase.getInstance().reference
 
+// References to views
+        val numberEditText = binding.productQuantity // EditText for quantity
+        val incrementButton = binding.incrementButton
+        val decrementButton = binding.decrementButton
+        val unitTextView = binding.unit // AutoCompleteTextView for unit selection
+
+// Variables for quantity management
+        var currentNumber = 1 // Initial quantity value
+        val maxNumber = 500 // Maximum value
+        val minNumber = 1 // Minimum value
+
+// Initialize productQty to combine quantity and unit
+        var productQty = "$currentNumber Kg" // Default initial value
+
+// Set initial value in EditText for quantity
+
+// Unit options for dropdown (AutoCompleteTextView)
+        val units = listOf("Kg", "g") // Units: "Kg" is the default
+
+// Create an ArrayAdapter for the unit dropdown
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, units)
+        unitTextView.setAdapter(adapter)
+
+// Set default text as "Kg" in unit dropdown
+
+        // Function to update the combined product quantity and unit
+        fun updateProductQty() {
+            val unit = unitTextView.text.toString()
+            val qty=numberEditText.text.toString()
+            productQty = "$qty $unit"
+            println("Updated productQty: $productQty") // For debugging, log the updated value
+            PQuantity=productQty
+        }
+
+// Show dropdown when unit field is clicked
+        unitTextView.setOnClickListener {
+            unitTextView.showDropDown()
+        }
+
+// Listen for changes in the unit selection to update productQty
+        unitTextView.setOnItemClickListener { _, _, _, _ ->
+            updateProductQty()
+        }
+
+// Increment button functionality with validation for unit selection
+        incrementButton.setOnClickListener {
+            if (unitTextView.text.isNullOrBlank()) {
+                // Show error if unit is not selected
+                unitTextView.error = "Please select a unit"
+            } else if (currentNumber < maxNumber) {
+                currentNumber++
+                numberEditText.setText(currentNumber.toString())
+                updateProductQty() // Update productQty when quantity changes
+            }
+        }
+
+// Decrement button functionality with validation for unit selection
+        decrementButton.setOnClickListener {
+            if (unitTextView.text.isNullOrBlank()) {
+                // Show error if unit is not selected
+                unitTextView.error = "Please select a unit"
+            } else if (currentNumber > minNumber) {
+                currentNumber--
+                numberEditText.setText(currentNumber.toString())
+                updateProductQty() // Update productQty when quantity changes
+            }
+        }
+
+
+        // Validation to ensure quantity and unit are both set
+        fun validateQuantityAndUnit(): Boolean {
+            val quantity = numberEditText.text.toString().toIntOrNull()
+            val unit = unitTextView.text.toString()
+
+            return when {
+                quantity == null || quantity < minNumber -> {
+                    numberEditText.error = "Please enter a valid quantity"
+                    false
+                }
+                unit.isBlank() -> {
+                    unitTextView.error = "Please select a unit"
+                    false
+                }
+                else -> true
+            }
+        }
+
+        binding.quantityoptions.setOnClickListener {
+            showQuantityOptions(it)
+        }
+
+
+
+        ///
+        binding.addItemButton.setOnClickListener {
+            // Call the validation function first
+            if (!validateQuantityAndUnit()) {
+                // If validation fails, stop further processing
+                Toast.makeText(
+                    this,
+                    "Please enter a valid quantity and select a unit",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+        }
         // Retrieve data from the Intent
         val category = intent.getStringExtra("category")
         val skuId = intent.getStringExtra("skuId")
@@ -54,7 +164,9 @@ class ProductEditActivity : AppCompatActivity() {
         val prices = intent.getStringExtra("prices")
         val imageUri = intent.getStringExtra("image")
         val quantity = intent.getStringExtra("quantity")
-        val productquantity = intent.getStringExtra("productquantity")
+        val productQuantityString = intent.getStringExtra("productquantity") ?: ""
+// Extract only numeric values using regex
+        val productquantity = productQuantityString.filter { it.isDigit() }
         val description = intent.getStringExtra("description")
 
         // Split names by comma and trim extra spaces
@@ -140,22 +252,11 @@ class ProductEditActivity : AppCompatActivity() {
         return name
     }
 
-    private fun setupWindowAppearance() {
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
-        }
-    }
 
     private fun retrieveShopName() {
         // Retrieve the shop name from Firebase
         val userId = auth.currentUser?.uid
-        databaseRef.child("Admins/$userId/Shop Id").get()
+        databaseRef.child("Delivery Details/Shop Id").get()
             .addOnSuccessListener { dataSnapshot ->
                 val shopName = dataSnapshot.getValue<String>()
                 binding.shopname.text = shopName ?: "Shop Name Not Available"
@@ -180,7 +281,6 @@ class ProductEditActivity : AppCompatActivity() {
         val currentDate = SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault()).format(Date())
 
         val shopRef = databaseRef.child("Shops").child(shopName)
-
         shopRef.get().addOnSuccessListener { dataSnapshot ->
             var itemFound = false
 
@@ -200,7 +300,7 @@ class ProductEditActivity : AppCompatActivity() {
                         ),
                         "foodPrice" to binding.edittextFoodPrice.text.toString(),
                         "key" to skuId,
-                        "productQuantity" to binding.productQuantity.text.toString(),
+                        "productQuantity" to PQuantity,
                         "quantity" to binding.quantitycount.text.toString(),
                         "updatedDate" to currentDate,
                         "updatedBy" to username
@@ -237,8 +337,7 @@ class ProductEditActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.option_10kg -> { binding.quantitycount.setText("10kg"); true }
                 R.id.option_20kg -> { binding.quantitycount.setText("20kg"); true }
-                R.id.option_500g -> { binding.quantitycount.setText("500g"); true }
-                R.id.option_250g -> { binding.quantitycount.setText("250g"); true }
+
                 R.id.option_50kg -> { binding.quantitycount.setText("50kg"); true }
                 R.id.option_100kg -> { binding.quantitycount.setText("100kg"); true }
                 else -> false
@@ -248,7 +347,7 @@ class ProductEditActivity : AppCompatActivity() {
     }
 
     private fun navigateToMainActivity() {
-        val intent = Intent(this, SubAdminMainActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)

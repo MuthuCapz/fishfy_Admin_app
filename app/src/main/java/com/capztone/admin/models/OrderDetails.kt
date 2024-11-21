@@ -2,7 +2,7 @@ package com.capztone.admin.models
 
 data class OrderDetails(
     val foodNames: List<String> = emptyList(),
-    val foodQuantities: List<Int> = emptyList(),
+    val skuUnitQuantities: List<String> = emptyList(),
     val foodPrices: List<Any?> = emptyList(),
     val itemPushKey: String = "",
     val userUid: String = "",

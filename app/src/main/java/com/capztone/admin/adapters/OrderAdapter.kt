@@ -11,7 +11,7 @@ import com.capztone.admin.models.OrderDetails
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
-class OrderAdapter(private var orderDetailsList: MutableList<OrderDetails>,private val noOrdersTextView: TextView, private val textViewPendingOrdersTitle: TextView, private val pendingorder: TextView, private val textViewCompletedOrders: TextView, private val completedorder: TextView) : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
+class OrderAdapter(private var orderDetailsList: MutableList<OrderDetails>, private val noOrdersTextView: TextView, private val textViewPendingOrdersTitle: TextView, private val pendingorder: TextView, private val textViewCompletedOrders: TextView, private val completedorder: TextView) : RecyclerView.Adapter<OrderAdapter.ViewHolder>() {
 
     private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("OrderDetails")
     private val statusMessagesMap = HashMap<String, String>()
@@ -117,7 +117,7 @@ class OrderAdapter(private var orderDetailsList: MutableList<OrderDetails>,priva
             binding.itemPushKey.text = "${orderDetails.itemPushKey ?: "N/A"}"
 
             binding.foodNames.text = "${orderDetails.foodNames?.joinToString(",") ?: "N/A"}"
-            binding.foodQuantities.text = "${orderDetails.foodQuantities?.joinToString(",") ?: "N/A"}"
+            binding.foodQuantities.text = "${orderDetails.skuUnitQuantities?.joinToString(",") ?: "N/A"}"
             binding.foodPrices.text = "${orderDetails.foodPrices?.joinToString(",") ?: "N/A"}"
             binding.slot.text = "${orderDetails.selectedSlot}"
 

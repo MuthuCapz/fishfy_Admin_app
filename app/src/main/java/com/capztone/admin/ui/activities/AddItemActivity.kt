@@ -7,10 +7,8 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import com.capztone.admin.R
 import com.capztone.admin.databinding.ActivityAddItemBinding
 import com.capztone.admin.models.AllMenu
@@ -20,15 +18,13 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlin.random.Random
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.OpenableColumns
 import android.view.Gravity
 import android.view.MenuInflater
 import android.widget.ArrayAdapter
 import android.widget.PopupMenu
-import android.widget.Spinner
-import androidx.core.content.ContentProviderCompat.requireContext
+import com.capztone.admin.utils.FirebaseAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import java.text.SimpleDateFormat
@@ -45,7 +41,7 @@ class AddItemActivity : AppCompatActivity() {
     private lateinit var Quantity: String
     private lateinit var stock: String
     private lateinit var category: String
-    private lateinit var PQuantity: String
+    private var PQuantity: String = "1 Kg"
     private var foodImageUri: Uri? = null
     private lateinit var categoryName: String
     private lateinit var auth: FirebaseAuth
@@ -63,19 +59,12 @@ class AddItemActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         //Initialize Firebase
-        auth = FirebaseAuth.getInstance()
+         auth = FirebaseAuthUtil.auth
         // Initialize Firebase database Instance
         database = FirebaseDatabase.getInstance()
+        // Initialize foodNames
+        foodNames = ArrayList()
 
-        window?.let { window ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                window.statusBarColor = Color.TRANSPARENT
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
-        }
         requestStoragePermissions()
 // Retrieve the category name from the Intent
         categoryName = intent.getStringExtra("categoryName") ?: ""
@@ -107,19 +96,105 @@ class AddItemActivity : AppCompatActivity() {
                 }
             }
         }
+        // References to views
+        val numberEditText = binding.productQuantity // EditText for quantity
+        val incrementButton = binding.incrementButton
+        val decrementButton = binding.decrementButton
+        val unitTextView = binding.unit // AutoCompleteTextView for unit selection
+
+// Variables for quantity management
+        var currentNumber = 1 // Initial quantity value
+        val maxNumber = 500 // Maximum value
+        val minNumber = 1 // Minimum value
+
+// Unit options for dropdown (AutoCompleteTextView)
+        val units = listOf("Kg", "g") // Units: "Kg" is the default
+
+// Create an ArrayAdapter for the unit dropdown
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, units)
+        unitTextView.setAdapter(adapter)
+
+        // Function to update the combined product quantity and unit
+        fun updateProductQty() {
+            val unit = unitTextView.text.toString()
+            val qty=numberEditText.text.toString()
+            val productQty = "$qty $unit"
+            println("Updated productQty: $productQty")
+            PQuantity=productQty// For debugging, log the updated value
+        }
+
+// Show dropdown when unit field is clicked
+        unitTextView.setOnClickListener {
+            unitTextView.showDropDown()
+        }
+
+// Listen for changes in the unit selection to update productQty
+        unitTextView.setOnItemClickListener { _, _, _, _ ->
+            updateProductQty()
+        }
+
+// Increment button functionality with validation for unit selection
+        incrementButton.setOnClickListener {
+            if (unitTextView.text.isNullOrBlank()) {
+                // Show error if unit is not selected
+                unitTextView.error = "Please select a unit"
+            } else if (currentNumber < maxNumber) {
+                currentNumber++
+                numberEditText.setText(currentNumber.toString())
+                updateProductQty() // Update productQty when quantity changes
+            }
+        }
+
+// Decrement button functionality with validation for unit selection
+        decrementButton.setOnClickListener {
+            if (unitTextView.text.isNullOrBlank()) {
+                // Show error if unit is not selected
+                unitTextView.error = "Please select a unit"
+            } else if (currentNumber > minNumber) {
+                currentNumber--
+                numberEditText.setText(currentNumber.toString())
+                updateProductQty() // Update productQty when quantity changes
+            }
+        }
+
+
+        // Validation to ensure quantity and unit are both set
+        fun validateQuantityAndUnit(): Boolean {
+            val quantity = numberEditText.text.toString().toIntOrNull()
+            val unit = unitTextView.text.toString()
+
+            return when {
+                quantity == null || quantity < minNumber -> {
+                    numberEditText.error = "Please enter a valid quantity"
+                    false
+                }
+                unit.isBlank() -> {
+                    unitTextView.error = "Please select a unit"
+                    false
+                }
+                else -> true
+            }
+        }
+
+
         binding.quantityoptions.setOnClickListener {
             showQuantityOptions(it)
         }
 
         ///
         binding.addItemButton.setOnClickListener {
-            // GET Data form Filed EditText
+            // Call the validation function first
+            if (!validateQuantityAndUnit()) {
+                // If validation fails, stop further processing
+                Toast.makeText(this, "Please enter a valid quantity and select a unit", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // GET Data from EditText fields
             foodPrice = binding.edittextFoodPrice.text.toString().trim()
             foodDescription = binding.editTextDescription.text.toString().trim()
             Quantity = binding.quantity.text.toString().trim()
             category = binding.category.text.toString().trim()
-            PQuantity= binding.productQuantity.text.toString().trim()
-
             // Clear previous entries
             foodNames.clear()
 
@@ -214,15 +289,6 @@ class AddItemActivity : AppCompatActivity() {
                     true
                 }
 
-                R.id.option_500g -> {
-                    binding.quantity.setText("500g")
-                    true
-                }
-
-                R.id.option_250g -> {
-                    binding.quantity.setText("250g")
-                    true
-                }
 
                 R.id.option_50kg -> {
                     binding.quantity.setText("50kg")
@@ -301,37 +367,37 @@ class AddItemActivity : AppCompatActivity() {
                                 .addOnSuccessListener {
                                     imageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
                                         val newItem = AllMenu(
-                                            newSKU,
-                                            foodNames, // ArrayList of food names
-                                            foodPrice,
-                                            foodDescription,
-                                            Quantity,
-                                            downloadUrl.toString(),
-                                            category,
+                                        newSKU,
+                                        foodNames, // ArrayList of food names
+                                        foodPrice,
+                                        foodDescription,
+                                        Quantity,
+                                        downloadUrl.toString(),
+                                        category,
                                             PQuantity,
-                                            CreatedDate = currentDate,
-                                            CreatedBy  = username
+                                        CreatedDate = currentDate,
+                                        CreatedBy  = username
 
-                                        )
+                                    )
 
-                                        // Add the new item to the shop's category
-                                        val shopRef = database.getReference("Shops").child(shopId)
-                                        shopRef.child(categoryName).child(newSKU).setValue(newItem)
-                                            .addOnSuccessListener {
-                                                // Optionally, store the shop name in the shop's node
-                                                shopRef.child("Shop name").setValue(shopName).addOnCompleteListener {
-                                                    Toast.makeText(this, "Item Uploaded Successfully", Toast.LENGTH_SHORT).show()
-                                                    finish() // Move this here to ensure the activity only finishes after upload
-                                                }
-                                            }.addOnFailureListener {
-                                                Toast.makeText(this, "Item Upload Failed", Toast.LENGTH_SHORT).show()
+                                    // Add the new item to the shop's category
+                                    val shopRef = database.getReference("Shops").child(shopId)
+                                    shopRef.child(categoryName).child(newSKU).setValue(newItem)
+                                        .addOnSuccessListener {
+                                            // Optionally, store the shop name in the shop's node
+                                            shopRef.child("Shop name").setValue(shopName).addOnCompleteListener {
+                                                Toast.makeText(this, "Item Uploaded Successfully", Toast.LENGTH_SHORT).show()
+                                                finish() // Move this here to ensure the activity only finishes after upload
                                             }
+                                        }.addOnFailureListener {
+                                            Toast.makeText(this, "Item Upload Failed", Toast.LENGTH_SHORT).show()
+                                        }
 
-                                    }
-                                }.addOnFailureListener {
-                                    Toast.makeText(this, "Image Upload Failed", Toast.LENGTH_SHORT)
-                                        .show()
                                 }
+                            }.addOnFailureListener {
+                                Toast.makeText(this, "Image Upload Failed", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
                         } else {
                             Toast.makeText(this, "Please Select an Image", Toast.LENGTH_SHORT)
                                 .show()

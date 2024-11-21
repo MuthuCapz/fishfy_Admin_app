@@ -25,6 +25,7 @@
     tools:text="Name"
     android:textStyle="bold"
     android:textSize="18sp"
+    android:fontFamily="@font/nunito"
     android:textColor="@color/navy"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -45,6 +46,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:fontFamily="@font/nunito"
             android:maxLines="1"
             android:textColor="@color/navy"
             android:textStyle="bold"
@@ -71,6 +73,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:fontFamily="@font/nunito"
             android:textColor="@color/navy"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -82,6 +85,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:fontFamily="@font/nunito"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -105,6 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="FoodName"
+            android:fontFamily="@font/nunito"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/order_card_dotted_divider" />
 
@@ -116,6 +121,7 @@
             android:layout_marginEnd="5dp"
             android:textColor="@color/black"
             android:layout_marginTop="8dp"
+            android:fontFamily="@font/nunito"
             app:layout_constraintTop_toBottomOf="@+id/order_card_dotted_divider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/order_summary_status_label_tv"
@@ -127,6 +133,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Quantity"
+            android:fontFamily="@font/nunito"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/foodNames" />
 
@@ -137,6 +144,7 @@
             android:textColor="@color/black"
             android:layout_marginTop="10dp"
              android:layout_marginEnd="5dp"
+            android:fontFamily="@font/nunito"
             android:layout_marginStart="130dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/order_summary_items_label_tv"
@@ -149,6 +157,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="FoodPrice"
+            android:fontFamily="@font/nunito"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/foodQuantities" />
 
@@ -160,6 +169,7 @@
             android:textColor="@color/navy"
              android:layout_marginTop="10dp"
             android:layout_marginEnd="5dp"
+            android:fontFamily="@font/nunito"
             android:layout_marginStart="130dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/order_summary_price_label_tv"
@@ -173,6 +183,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Delivery Slot"
+            android:fontFamily="@font/nunito"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/foodPrices" />
 
@@ -185,6 +196,7 @@
              android:layout_marginEnd="5dp"
             android:layout_marginTop="10dp"
             android:layout_marginStart="130dp"
+            android:fontFamily="@font/nunito"
             app:layout_constraintStart_toStartOf="@+id/delivery_slot_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/foodPrices"
@@ -197,6 +209,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Address"
+            android:fontFamily="@font/nunito"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/slot" />
 
@@ -207,6 +220,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
 android:layout_marginTop="10dp"
+            android:fontFamily="@font/nunito"
             android:layout_marginStart="130dp"
             android:layout_marginEnd="5dp"
 app:layout_constraintStart_toEndOf="@+id/address_label"
