@@ -208,14 +208,19 @@ class AddItemActivity : AppCompatActivity() {
                     else -> binding.editText3FoodName
                 }
                 val foodName = foodNameEditText.text.toString().trim()
+
                 if (foodName.isNotBlank()) {
                     foodNames.add(foodName)
                 }
             }
 
             val userId = auth.currentUser?.uid
-
-            if (foodNames.isNotEmpty() && foodPrice.isNotBlank() && foodDescription.isNotBlank() && Quantity.isNotBlank() && category.isNotBlank() && PQuantity.isNotBlank()) {
+// Check if all required fields are filled
+            val english = binding.editTextFoodName.text.toString().trim()
+            val tamil = binding.editText1FoodName.text.toString().trim()
+            val telugu = binding.editText2FoodName.text.toString().trim()
+            val malayalam = binding.editText3FoodName.text.toString().trim()
+            if (foodNames.isNotEmpty() && english.isNotEmpty() && tamil.isNotEmpty() && telugu.isNotEmpty() && malayalam.isNotEmpty() && foodPrice.isNotBlank() && foodDescription.isNotBlank() && Quantity.isNotBlank() && category.isNotBlank() && PQuantity.isNotBlank()) {
                 uploadData(userId)
                 Toast.makeText(this, "Item Add Successfully", Toast.LENGTH_SHORT).show()
                 finish()

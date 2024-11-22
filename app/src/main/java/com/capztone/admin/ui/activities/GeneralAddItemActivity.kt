@@ -208,6 +208,8 @@ auth = FirebaseAuthUtil.auth
                     else -> binding.editText3FoodName
                 }
                 val foodName = foodNameEditText.text.toString().trim()
+
+
                 if (foodName.isNotBlank()) {
                     foodNames.add(foodName)
                 }
@@ -216,7 +218,11 @@ auth = FirebaseAuthUtil.auth
             val userId = auth.currentUser?.uid
 
             // Check if all required fields are filled
-            if (foodNames.isNotEmpty() && foodPrice.isNotBlank() && foodDescription.isNotBlank() && Quantity.isNotBlank() && category.isNotBlank() && PQuantity.isNotBlank()) {
+            val english = binding.editTextFoodName.text.toString().trim()
+            val tamil = binding.editText1FoodName.text.toString().trim()
+            val telugu = binding.editText2FoodName.text.toString().trim()
+            val malayalam = binding.editText3FoodName.text.toString().trim()
+            if (foodNames.isNotEmpty() && english.isNotEmpty() && tamil.isNotEmpty() && telugu.isNotEmpty() && malayalam.isNotEmpty() && foodPrice.isNotBlank() && foodDescription.isNotBlank() && Quantity.isNotBlank() && category.isNotBlank() && PQuantity.isNotBlank()) {
                 uploadData(userId)
                 Toast.makeText(this, "Item Add Successfully", Toast.LENGTH_SHORT).show()
                 finish()

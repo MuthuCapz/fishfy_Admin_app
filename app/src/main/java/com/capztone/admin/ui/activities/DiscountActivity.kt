@@ -282,8 +282,13 @@ auth = FirebaseAuthUtil.auth
         } else {
             discounts // Keeps original text if not numeric
         }
+// Check if all required fields are filled
+        val english = binding.editTextFoodName.text.toString().trim()
+        val tamil = binding.editText1FoodName.text.toString().trim()
+        val telugu = binding.editText2FoodName.text.toString().trim()
+        val malayalam = binding.editText3FoodName.text.toString().trim()
 
-        if (foodNamesList.isNotEmpty() && foodPrices.isNotBlank() && foodDescriptions.isNotBlank() && Quantitys.isNotBlank() && categorys.isNotBlank() && discounts.isNotBlank() && PQuantity.isNotBlank()) {
+        if (foodNamesList.isNotEmpty() && english.isNotEmpty() && tamil.isNotEmpty() && telugu.isNotEmpty() && malayalam.isNotEmpty() && foodPrices.isNotBlank() && foodDescriptions.isNotBlank() && Quantitys.isNotBlank() && categorys.isNotBlank() && discounts.isNotBlank() && PQuantity.isNotBlank()) {
             val userId = auth.currentUser?.uid
             if (userId == null) {
                 Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
