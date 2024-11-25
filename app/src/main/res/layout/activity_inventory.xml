@@ -46,10 +46,10 @@
         android:gravity="center"
         android:indeterminate="true" />
     <TextView
-        android:id="@+id/NoProduct"
+        android:id="@+id/noProductTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Products Available.\nPlease Save All Products."
+        android:text="No products available.\nPlease add a product."
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

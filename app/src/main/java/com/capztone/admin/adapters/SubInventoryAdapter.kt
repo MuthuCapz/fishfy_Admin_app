@@ -1,170 +1,337 @@
 package com.capztone.admin.adapters
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
+import android.content.Intent
+import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
+import android.widget.Button
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.capztone.admin.R
-import com.capztone.admin.databinding.AddInventoryItemBinding
 import com.capztone.admin.databinding.SubInventoryItemBinding
+import com.capztone.admin.models.AllMenu
 import com.capztone.admin.models.DiscountItem
-import com.capztone.admin.models.RetrieveItem
+import com.capztone.admin.ui.activities.SubAdminDiscountProductEditActivity
+import com.capztone.admin.ui.activities.SubAdminInventory
+import com.capztone.admin.ui.activities.SubAdminProductEditActivity
+
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
-class SubInventoryAdapter(private val context: Context,  private val onDataFetched: (Boolean) -> Unit) : RecyclerView.Adapter<SubInventoryAdapter.ViewHolder>() {
+class SubInventoryAdapter(
+    private val context: Context,
+    private var items: List<Any>,
+    private val databaseReference: DatabaseReference,
+    private val noProductTextView: TextView,
+    private val button: Button,
+) : RecyclerView.Adapter<SubInventoryAdapter.AllItemViewHolder>() {
 
-    private val database = FirebaseDatabase.getInstance()
-    private val currentUserID: String = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-    private var productsList: MutableList<RetrieveItem> = mutableListOf()
-    private var productsList1: MutableList<DiscountItem> = mutableListOf()
+    init {
+        // Update visibility when the adapter is initialized or when the data changes
+        updateNoProductVisibility()
+    }
 
-    // ViewHolder class
-    inner class ViewHolder(private val binding: SubInventoryItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AllItemViewHolder {
+        val binding =  SubInventoryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return AllItemViewHolder(binding)
+    }
 
+    override fun onBindViewHolder(holder: AllItemViewHolder, position: Int) {
+        holder.bind(position)
+    }
 
-        fun bind(retrieveItem: RetrieveItem?, discountItem: DiscountItem?) {
-            retrieveItem?.let { product ->
-                binding.itemFoodNameTextView.text = product.foodName?.getOrNull(0)
-                binding.SkuId.text = product.key
-                binding.itemPriceTextView.text = "₹${product.foodPrice.toString()}"
-                binding.allmenuCategory.text = product.category.toString()
-                binding.quantityTextView.text = "Total Qty: ${product.quantity}"
-                binding.quantityunit.text="/ ${product.productQuantity}"
+    override fun getItemCount(): Int = items.size
 
-                Glide.with(context)
-                    .load(product.foodImage)
-                    .into(binding.itemImageView)
-
-                binding.stock.text = product.stock // Update stock status here
-            }
-
-            discountItem?.let { discount ->
-                binding.itemFoodNameTextView.text = discount.foodNames?.getOrNull(0)
-                binding.SkuId.text = discount.key
-                binding.itemPriceTextView.text = "₹${discount.foodPrices.toString()}"
-                binding.allmenuCategory.text = discount.categorys.toString()
-                binding.quantityTextView.text = "Total Qty: ${discount.quantitys}"
-                binding.quantityunit.text="/ ${discount.productQuantity}"
-
-                Glide.with(context)
-                    .load(discount.foodImages)
-                    .into(binding.itemImageView)
-
-                binding.stock.text = discount.stocks
-                // Update other views as needed
+    // Method to update data and notify the adapter, ensuring no duplicate products
+    fun updateItems(newItems: List<Any>) {
+        val uniqueItems = newItems.distinctBy {
+            when (it) {
+                is AllMenu -> it.key // Use key for AllMenu items
+                is DiscountItem -> it.key // Use key for DiscountItem items
+                else -> null // Handle other item types if necessary
             }
         }
-
-    }
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = SubInventoryItemBinding.inflate(inflater, parent, false)
-        return ViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (position < productsList.size) {
-            val retrieveItem = productsList[position]
-            holder.bind(retrieveItem, null)
-        } else {
-            val discountItemPosition = position - productsList.size
-            val discountItem = productsList1.getOrNull(discountItemPosition)
-            holder.bind(null, discountItem)
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return productsList.size + productsList1.size
-    }
-    @SuppressLint("NotifyDataSetChanged")
-    fun fetchData() {
-        val currentUserID = FirebaseAuth.getInstance().currentUser?.uid
-
-        currentUserID?.let { userId ->
-            val adminRef = database.getReference("Admins").child(currentUserID)
-            adminRef.child("Shop Id").get().addOnSuccessListener { snapshot ->
-                val shopName = snapshot.getValue(String::class.java)
-                if (shopName != null) {
-                    // Fetch RetrieveItem items from the shop-specific path
-                    val productsRef = database.getReference("Shops").child(shopName).child("Products")
-                    productsRef.addValueEventListener(object : ValueEventListener {
-                        @SuppressLint("NotifyDataSetChanged")
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            Log.d("InventoryAdapter", "onDataChange called")
-                            productsList.clear()
-                            val uniqueProducts = mutableSetOf<String>()
-                            for (snapshot in dataSnapshot.children) {
-                                val product = snapshot.getValue(RetrieveItem::class.java)
-                                product?.let {
-                                    // Allow both admin and sub-admin to retrieve products
-                                    if (it.foodName != null && uniqueProducts.add(it.foodName.toString())) {
-
-                                        productsList.add(it)
-                                        Log.d("InventoryAdapter", "Added product: ${it.foodName}")
-                                    }
-                                }
-                            }
-                            checkEmptyState()
-                            notifyDataSetChanged()
-                        }
-
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            // Handle error
-                        }
-                    })
-
-                    // Fetch DiscountItem items from the shop-specific path
-                    val discountItemsRef = database.getReference("Shops").child(shopName).child("Products")
-                    discountItemsRef.addValueEventListener(object : ValueEventListener {
-                        @SuppressLint("NotifyDataSetChanged")
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            productsList1.clear()
-                            val uniqueDiscountItems = mutableSetOf<String>()
-                            for (snapshot in dataSnapshot.children) {
-                                val discountItem = snapshot.getValue(DiscountItem::class.java)
-                                discountItem?.let {
-                                    // Allow both admin and sub-admin to retrieve discount items
-                                    if (it.foodNames != null && uniqueDiscountItems.add(it.foodNames.toString())) {
-
-                                        productsList1.add(it)
-                                        Log.d("InventoryAdapter", "Added discount item: ${it.foodNames}")
-
-                                    }
-                                }
-                            }
-                            checkEmptyState()
-                            notifyDataSetChanged()
-                        }
-
-                        override fun onCancelled(databaseError: DatabaseError) {
-                            // Handle error
-                        }
-                    })
-                } else {
-                    Log.e("InventoryAdapter", "Shop name not found for user: $userId")
-                }
-            }.addOnFailureListener { exception ->
-                Log.e("InventoryAdapter", "Failed to retrieve shop name: $exception")
-            }
-        }
-    }
-    private fun checkEmptyState() {
-        // Notify the activity if both lists are empty
-        onDataFetched(productsList.isNotEmpty() || productsList1.isNotEmpty())
+        items = uniqueItems
+        updateNoProductVisibility()
         notifyDataSetChanged()
     }
-    fun getItems(): List<RetrieveItem> {
-        return productsList
-    }
 
-    fun getDiscountItems(): List<DiscountItem> {
-        return productsList1
+    private fun updateNoProductVisibility() {
+        // Initially, set the TextView to invisible
+        noProductTextView.visibility = View.INVISIBLE
+        button.visibility = View.INVISIBLE
+
+        // Delay for 3 seconds before making the TextView visible if the list is empty
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (items.isEmpty()) {
+                noProductTextView.visibility = View.VISIBLE // Show "NoProduct" message
+                button.visibility = View.GONE
+
+            } else {
+                noProductTextView.visibility = View.GONE // Hide the message if there are items
+                button.visibility = View.VISIBLE
+            }
+        }, 1600) // 3000 milliseconds = 3 seconds
+    }
+    inner class AllItemViewHolder(private val binding: SubInventoryItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(position: Int) {
+            // Determine the type of item
+            val item = items[position]
+            if (item is AllMenu) {
+                bindAllMenuItem(item)
+            } else if (item is DiscountItem) {
+                bindDiscountItem(item)
+            }
+        }
+
+        private fun bindAllMenuItem(menuItem: AllMenu) {
+            val uriString = menuItem.foodImage
+            val uri = Uri.parse(uriString)
+
+            binding.apply {
+                // Format the foodName list to remove brackets and join the names with new lines
+                val formattedFoodName = menuItem.foodName?.joinToString(separator = "\n") ?: ""
+
+                // Bind data to views
+                itemFoodNameTextView.text = formattedFoodName
+                itemPriceTextView.text = "₹ ${menuItem.foodPrice}"
+                quantityTextView.text = "Total Qty: ${menuItem.quantity}"
+                SkuId.text = menuItem.key
+                stock.text = menuItem.stock
+                allmenuCategory.text = menuItem.category
+                quantityunit.text = "/ ${menuItem.productQuantity}" // Display the product quantity with a preceding slash
+                Glide.with(context).load(uri).into(itemImageView)
+
+                // Handle delete button click
+                deleteImageButton.setOnClickListener {
+                    val skuId = menuItem.key
+                    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid // Get the current user's ID
+                    val allUsersRef = FirebaseDatabase.getInstance().getReference("user")
+                    val orderDetailsRef = FirebaseDatabase.getInstance().getReference("OrderDetails")
+
+                    if (skuId != null) {
+                        // Fetch all OrderDetails to check if the skuId exists in a confirmed order's skuList
+                        orderDetailsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(orderSnapshot: DataSnapshot) {
+                                var skuExistsInConfirmedOrder = false
+
+                                // Iterate over each order in OrderDetails
+                                for (orderSnapshot in orderSnapshot.children) {
+                                    val confirmationStatus = orderSnapshot.child("Status").child("message").value as? String
+                                    val skuListSnapshot = orderSnapshot.child("skuList")
+
+                                    // Check if the order has Confirmation: "Order Confirmed"
+                                    if (confirmationStatus == "Order confirmed") {
+                                        // Check each SKU in the skuList for this order
+                                        for (skuSnapshot in skuListSnapshot.children) {
+                                            val orderSkuId = skuSnapshot.value as? String
+                                            if (orderSkuId == skuId) {
+                                                skuExistsInConfirmedOrder = true
+                                                break // Exit loop if SKU found
+                                            }
+                                        }
+                                    }
+
+                                    if (skuExistsInConfirmedOrder) break // Exit outer loop if SKU found
+                                }
+
+                                // Now check if SKU exists in the confirmed orders
+                                if (skuExistsInConfirmedOrder) {
+                                    // Show the SKU existing dialog if SKU ID is found in any order's confirmed skuList
+                                    (context as?  SubAdminInventory)?.skuExistingCartDialog()
+                                } else {
+                                    // Proceed to check users' cartItems for the SKU ID
+                                    allUsersRef.addListenerForSingleValueEvent(object :
+                                        ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            var skuExistsInCart = false
+
+                                            // Iterate over each user's cartItems
+                                            for (userSnapshot in snapshot.children) {
+                                                val cartItemsSnapshot = userSnapshot.child("cartItems")
+
+                                                // Check each SKU in the cartItems path for this user
+                                                for (cartItemSnapshot in cartItemsSnapshot.children) {
+                                                    val cartSkuId = cartItemSnapshot.key
+                                                    if (cartSkuId == skuId) {
+                                                        skuExistsInCart = true
+                                                        break // Exit loop if SKU found
+                                                    }
+                                                }
+
+                                                if (skuExistsInCart) break // Exit outer loop if SKU found
+                                            }
+
+                                            if (skuExistsInCart) {
+                                                // Show the delete confirmation dialog if SKU exists in any user's cartItems
+                                                (context as? SubAdminInventory)?.skuExistingCartDialog()
+                                            } else {
+                                                // Show a different dialog if the SKU ID does not match any in cartItems
+                                                (context as? SubAdminInventory)?.showDeleteConfirmationDialog(skuId)
+                                            }
+                                        }
+
+                                        override fun onCancelled(error: DatabaseError) {
+                                            // Handle potential errors here
+                                        }
+                                    })
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                // Handle potential errors here
+                            }
+                        })
+                    }
+                }
+
+
+
+                // Handle edit button click to navigate to ProductEditActivity
+                edit.setOnClickListener {
+                    val intent = Intent(context, SubAdminProductEditActivity::class.java)
+                    intent.putExtra("category", menuItem.category)
+                    intent.putExtra("skuId", menuItem.key)
+                    intent.putExtra("names", formattedFoodName)
+                    intent.putExtra("prices", menuItem.foodPrice)
+                    intent.putExtra("image", uriString)
+                    intent.putExtra("quantity", menuItem.quantity)
+                    intent.putExtra("productquantity", menuItem.productQuantity)
+                    intent.putExtra("description", menuItem.foodDescription)
+                    context.startActivity(intent)
+                }
+            }
+        }
+
+        private fun bindDiscountItem(discountItem: DiscountItem) {
+            val uriString = discountItem.foodImages
+            val uri = Uri.parse(uriString)
+
+            binding.apply {
+                // Format the foodNames list to remove brackets and join the names with new lines
+                val formattedFoodNames =
+                    discountItem.foodNames?.joinToString(separator = "\n") ?: ""
+
+                // Bind data to views
+                itemFoodNameTextView.text = formattedFoodNames
+                itemPriceTextView.text = "₹ ${discountItem.foodPrices}"
+                quantityTextView.text = "Total Qty: ${discountItem.quantitys}"
+                SkuId.text = discountItem.key
+                quantityunit.text = "/ ${discountItem.productQuantity}" // Display the product quantity with a preceding slash
+                allmenuCategory.text = discountItem.categorys
+                stock.text = discountItem.stocks
+                Glide.with(context).load(uri).into(itemImageView)
+
+                // Handle delete button click
+                deleteImageButton.setOnClickListener {
+                    val skuId = discountItem.key
+                    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid // Get the current user's ID
+                    val allUsersRef = FirebaseDatabase.getInstance().getReference("user")
+                    val orderDetailsRef = FirebaseDatabase.getInstance().getReference("OrderDetails")
+
+                    if (skuId != null) {
+                        // Fetch all OrderDetails to check if the skuId exists in a confirmed order's skuList
+                        orderDetailsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(orderSnapshot: DataSnapshot) {
+                                var skuExistsInConfirmedOrder = false
+
+                                // Iterate over each order in OrderDetails
+                                for (orderSnapshot in orderSnapshot.children) {
+                                    val confirmationStatus = orderSnapshot.child("Status").child("message").value as? String
+                                    val skuListSnapshot = orderSnapshot.child("skuList")
+
+                                    // Check if the order has Confirmation: "Order Confirmed"
+                                    if (confirmationStatus == "Order confirmed") {
+                                        // Check each SKU in the skuList for this order
+                                        for (skuSnapshot in skuListSnapshot.children) {
+                                            val orderSkuId = skuSnapshot.value as? String
+                                            if (orderSkuId == skuId) {
+                                                skuExistsInConfirmedOrder = true
+                                                break // Exit loop if SKU found
+                                            }
+                                        }
+                                    }
+
+                                    if (skuExistsInConfirmedOrder) break // Exit outer loop if SKU found
+                                }
+
+                                // Now check if SKU exists in the confirmed orders
+                                if (skuExistsInConfirmedOrder) {
+                                    // Show the SKU existing dialog if SKU ID is found in any order's confirmed skuList
+                                    (context as? SubAdminInventory)?.skuExistingCartDialog()
+                                } else {
+                                    // Proceed to check users' cartItems for the SKU ID
+                                    allUsersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            var skuExistsInCart = false
+
+                                            // Iterate over each user's cartItems
+                                            for (userSnapshot in snapshot.children) {
+                                                val cartItemsSnapshot = userSnapshot.child("cartItems")
+
+                                                // Check each SKU in the cartItems path for this user
+                                                for (cartItemSnapshot in cartItemsSnapshot.children) {
+                                                    val cartSkuId = cartItemSnapshot.key
+                                                    if (cartSkuId == skuId) {
+                                                        skuExistsInCart = true
+                                                        break // Exit loop if SKU found
+                                                    }
+                                                }
+
+                                                if (skuExistsInCart) break // Exit outer loop if SKU found
+                                            }
+
+                                            if (skuExistsInCart) {
+                                                // Show the delete confirmation dialog if SKU exists in any user's cartItems
+                                                (context as? SubAdminInventory)?.skuExistingCartDialog()
+                                            } else {
+                                                // Show a different dialog if the SKU ID does not match any in cartItems
+                                                (context as? SubAdminInventory)?.showDeleteConfirmationDialog(skuId)
+                                            }
+                                        }
+
+                                        override fun onCancelled(error: DatabaseError) {
+                                            // Handle potential errors here
+                                        }
+                                    })
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                // Handle potential errors here
+                            }
+                        })
+                    }
+                }
+
+
+
+                // Handle edit button click to navigate to DiscountProductEditActivity
+                edit.setOnClickListener {
+                    val intent = Intent(context, SubAdminDiscountProductEditActivity::class.java)
+                    intent.putExtra("category", discountItem.categorys)
+                    intent.putExtra("skuId", discountItem.key)
+                    intent.putExtra("names", formattedFoodNames)
+                    intent.putExtra("prices", discountItem.foodPrices)
+                    intent.putExtra("image", uriString)
+                    intent.putExtra("quantity", discountItem.quantitys)
+                    intent.putExtra("productquantity", discountItem.productQuantity)
+                    intent.putExtra("discounts", discountItem.discounts)
+                    intent.putExtra("description", discountItem.foodDescriptions)
+                    context.startActivity(intent)
+                }
+            }
+        }
     }
 }
+

@@ -116,6 +116,7 @@ class MenuItemAdapter(
                 itemPriceTextView.text = "₹ ${menuItem.foodPrice}"
                 quantityTextView.text = "Total Qty: ${menuItem.quantity}"
                 SkuId.text = menuItem.key
+                stock.text = menuItem.stock
                 allmenuCategory.text = menuItem.category
                 quantityUnit.text = "/ ${menuItem.productQuantity}" // Display the product quantity with a preceding slash
                 Glide.with(context).load(uri).into(itemImageView)
@@ -236,6 +237,7 @@ class MenuItemAdapter(
                 itemPriceTextView.text = "₹ ${discountItem.foodPrices}"
                 quantityTextView.text = "Total Qty: ${discountItem.quantitys}"
                 SkuId.text = discountItem.key
+                stock.text = discountItem.stocks
                 allmenuCategory.text = discountItem.categorys
                 quantityUnit.text = "/ ${discountItem.productQuantity}" // Display the product quantity with a preceding slash
                 Glide.with(context).load(uri).into(itemImageView)

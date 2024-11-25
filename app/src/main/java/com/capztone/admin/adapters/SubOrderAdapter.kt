@@ -122,6 +122,7 @@ class SubOrderAdapter(
                                                 // Add the order only if cancellationMessage is blank
                                                 if (cancellationMessage.isNullOrBlank() && message.isNullOrBlank()) {
                                                     orderDetailsList.add(orderDetails)
+                                                    sortOrdersByTimestamp()
                                                     notifyDataSetChanged()
                                                 }
                                             }
@@ -135,6 +136,7 @@ class SubOrderAdapter(
                                         // Add orders that have "Order Confirmed" status
                                         if (message == "Order confirmed" || message == "Order picked") {
                                             orderDetailsList.add(orderDetails)
+                                            sortOrdersByTimestamp()
                                         }
                                     }
                                     "Completed Orders" -> {
@@ -142,6 +144,7 @@ class SubOrderAdapter(
                                         if (message == "Order delivered") {
                                             orderDetailsList.add(orderDetails)
                                             deliveredOrderCount++
+                                            sortOrdersByTimestamp()
                                         }
                                     }
                                     "Cancel Orders" -> {
@@ -154,8 +157,9 @@ class SubOrderAdapter(
                                                 if (!cancellationMessage.isNullOrBlank()) {
                                                     orderDetailsList.add(orderDetails)
                                                     Log.d("SubOrderAdapter", "Order $orderId retrieved with cancellation message: $cancellationMessage")
+                                                    sortOrdersByTimestamp()
                                                 }
-                                                notifyDataSetChanged()
+
                                             }
 
                                             override fun onCancelled(error: DatabaseError) {
@@ -185,7 +189,10 @@ class SubOrderAdapter(
         })
     }
 
-
+    private fun sortOrdersByTimestamp() {
+        orderDetailsList.sortByDescending { it.orderDate } // Assuming orderDate is a comparable timestamp
+        notifyDataSetChanged()
+    }
 
     fun getDeliveredOrderCount(): Int {
         return deliveredOrderCount
@@ -314,7 +321,7 @@ class SubOrderAdapter(
                         orderRef.child("Confirmation").setValue("Order Confirmed").addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 Toast.makeText(binding.root.context, "Order Confirmed!", Toast.LENGTH_SHORT).show()
-                                binding.confirmOrder.text = "Order Comfirmed"
+                                binding.confirmOrder.text = "Order Confirmed"
                                 binding.confirmOrder.isEnabled = false
 
                             } else {
@@ -361,7 +368,7 @@ class SubOrderAdapter(
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val confirmationStatus = snapshot.getValue(String::class.java) ?: ""
                     if (confirmationStatus == "Order Confirmed") {
-                        binding.confirmOrder.text = "Order Comfirmed"
+                        binding.confirmOrder.text = "Order Confirmed"
                         binding.confirmOrder.isEnabled = false
                     }
                 }

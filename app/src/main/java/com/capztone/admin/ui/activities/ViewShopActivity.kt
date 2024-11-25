@@ -12,8 +12,11 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import android.Manifest
+import android.content.ContentValues
 
 import android.os.Environment
+import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.File
@@ -27,6 +30,7 @@ import com.capztone.admin.databinding.DialogDeleteConfirmationBinding
 import com.capztone.admin.databinding.SkuExistingDeleteBinding
 import com.capztone.admin.models.ViewShop
 import com.google.firebase.database.*
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -40,6 +44,7 @@ class ViewShopActivity : AppCompatActivity() {
     private lateinit var filteredShopList: MutableList<ViewShop> // List for filtered shops
     private lateinit var shopSearchAdapter: ViewShopAdapter
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewShopBinding.inflate(layoutInflater)
@@ -96,38 +101,50 @@ class ViewShopActivity : AppCompatActivity() {
         dialog.show()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun exportShopListToCSV() {
         try {
-            // Define the file path in the app's private external storage directory
-            val appDirectory = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-            if (appDirectory == null || !appDirectory.exists()) {
-                appDirectory?.mkdirs() // Create the directory if it doesn't exist
-            }
-
-            val csvFile = File(appDirectory, "ShopList.csv")
-            val writer = FileWriter(csvFile)
-
-            // Define CSV header and content
+            // Prepare CSV content
             val csvHeader = "Shop ID,Shop Name,Mobile Number,Created Date\n"
-            writer.append(csvHeader)
+            val csvData = StringBuilder(csvHeader)
 
             for (shop in filteredShopList) {
                 val formattedDate = SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault()).format(Date(shop.createdDate))
-                writer.append("${shop.shopId},${shop.shopName},${shop.mobileNumber ?: "N/A"},${formattedDate}\n")
+                csvData.append("${shop.shopId},${shop.shopName},${shop.mobileNumber ?: "N/A"},${formattedDate}\n")
             }
 
-            writer.flush()
-            writer.close()
+            // Use MediaStore to save in Downloads directory
+            val values = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, "ShopList.csv") // File name
+                put(MediaStore.MediaColumns.MIME_TYPE, "text/csv") // File type
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS) // Directory
+            }
 
-            // Inform the user about the file location
-            Log.d("ExportCSV", "CSV file created successfully at: ${csvFile.absolutePath}")
-            showToast("CSV file exported to: ${csvFile.absolutePath}")
-        } catch (e: IOException) {
-            Log.e("ExportCSV", "Error creating CSV file: ${e.message}")
-            showToast("Failed to export CSV file.")
+            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+            if (uri != null) {
+                contentResolver.openOutputStream(uri)?.use { outputStream ->
+                    writeCSVToStream(csvData.toString(), outputStream)
+                }
+                showToast("CSV file exported successfully to Downloads.")
+            } else {
+                showToast("Failed to export CSV file.")
+            }
+        } catch (e: Exception) {
+            Log.e("ExportCSV", "Error exporting CSV: ${e.message}")
+            showToast("Error exporting CSV file.")
         }
     }
 
+    // Helper function to write CSV data to the output stream
+    private fun writeCSVToStream(data: String, outputStream: OutputStream) {
+        outputStream.write(data.toByteArray())
+        outputStream.flush()
+    }
+
+    // Helper function to show toast messages
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 
     private fun checkPermissions(): Boolean {
         val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -143,6 +160,7 @@ class ViewShopActivity : AppCompatActivity() {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_WRITE_PERMISSION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -152,9 +170,7 @@ class ViewShopActivity : AppCompatActivity() {
         }
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
+
     private fun showdeletedialog(shopId: String) {
 
         val dialog = Dialog(this)

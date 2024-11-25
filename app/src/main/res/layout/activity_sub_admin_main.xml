@@ -354,10 +354,12 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/cardstroke"
                 android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="20dp"
                 android:padding="10dp"
                 app:layout_constraintWidth_percent="0.45"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/SubInventory"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/categorylist1">
 
                 <ImageView
@@ -393,12 +395,10 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/cardstroke"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="15dp"
                 android:layout_marginTop="20dp"
                 android:padding="10dp"
                 app:layout_constraintWidth_percent="0.45"
-                app:layout_constraintStart_toEndOf="@id/AllProducts"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/categorylist1">
 
                 <ImageView

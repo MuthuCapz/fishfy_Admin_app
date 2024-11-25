@@ -46,9 +46,8 @@ class GeneralAddCategoryActivity : AppCompatActivity() {
         }
 
 
-        // Save Button Click
         binding.saveButton.setOnClickListener {
-            val categoryName = binding.categoryNameEditText.text.toString().trim()
+            var categoryName = binding.categoryNameEditText.text.toString().trim()
 
             // Check if the category name is empty
             if (categoryName.isEmpty()) {
@@ -56,21 +55,26 @@ class GeneralAddCategoryActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Check if the image URI is null
-            if (imageUri == null) {
-                Toast.makeText(this, "Please add an image for the category", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            // Normalize category name for discount variations and minor misspellings
+            val normalizedCategoryName = categoryName.lowercase(Locale.getDefault()).trim()
+
+// Check if the category name matches variations of "discount" or common misspellings
+            if (normalizedCategoryName in listOf("discount", "discounts", "discunt", "disount", "disscount","Discount","Discounts")) {
+                categoryName = "discount"  // Store as "discount"
             }
 
-            // Check if the shop ID is available
-            if (shopId.isNullOrEmpty()) {
-                Toast.makeText(this, "Failed to retrieve shop ID", Toast.LENGTH_SHORT).show()
+
+            // Check if the image URI is null
+            if (imageUri == null) {
+                Toast.makeText(this, "Please add an image for the category", Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
 
             // Proceed to upload the image and save the category
             uploadImageToFirebase(categoryName, shopId!!)
         }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -104,16 +104,12 @@ auth = FirebaseAuthUtil.auth
             generalAdminRef.child("Shop Id").get().addOnSuccessListener { snapshot ->
                 val shopName = snapshot.getValue(String::class.java)
                 if (shopName != null) {
-                    // Use the shop name in the path for "Products" and "Discount_items"
-                    val productsRef = databaseReference.child("Shops").child(shopName).child("Products")
-
-
                     // Separate the discount items from other items
                     val allItems = ArrayList<Any>()
                     allItems.addAll(menuItems)
                     allItems.addAll(discountItems)
 
-                    // Update stock status based on quantity and prepare to store items
+                    // Update stock status based on quantity and SKU ID
                     allItems.forEach { item ->
                         when (item) {
                             is AllMenu -> {
@@ -124,6 +120,32 @@ auth = FirebaseAuthUtil.auth
                                 } else {
                                     "In Stock"
                                 }
+
+                                // Check SKU ID in each category inside "Shops" for stock update
+                                val shopRef = databaseReference.child("Shops").child(shopName)
+                                shopRef.get().addOnSuccessListener { shopSnapshot ->
+                                    if (shopSnapshot.exists()) {
+                                        // Loop through all categories in the shop
+                                        for (categorySnapshot in shopSnapshot.children) {
+                                            // Fetch SKU reference inside category
+                                            val skuRef = categorySnapshot.child(item.key ?: "")
+                                            if (skuRef.exists()) {
+                                                // Update stock status based on SKU ID and quantity
+                                                val skuDatabaseRef = databaseReference
+                                                    .child("Shops")
+                                                    .child(shopName)
+                                                    .child(categorySnapshot.key ?: "")
+                                                    .child(item.key ?: "")
+
+                                                if (quantityValue == null || quantityValue == 0) {
+                                                    skuDatabaseRef.child("stock").setValue("Out Of Stock")
+                                                } else {
+                                                    skuDatabaseRef.child("stock").setValue("In Stock")
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             is DiscountItem -> {
                                 // Parse the quantity string to extract the numeric value
@@ -133,24 +155,35 @@ auth = FirebaseAuthUtil.auth
                                 } else {
                                     "In Stock"
                                 }
+
+                                // Check SKU ID in each category inside "Shops" for stock update
+                                val shopRef = databaseReference.child("Shops").child(shopName)
+                                shopRef.get().addOnSuccessListener { shopSnapshot ->
+                                    if (shopSnapshot.exists()) {
+                                        // Loop through all categories in the shop
+                                        for (categorySnapshot in shopSnapshot.children) {
+                                            // Fetch SKU reference inside category
+                                            val skuRef = categorySnapshot.child(item.key ?: "")
+                                            if (skuRef.exists()) {
+                                                // Update stock status based on SKU ID and quantity
+                                                val skuDatabaseRef = databaseReference
+                                                    .child("Shops")
+                                                    .child(shopName)
+                                                    .child(categorySnapshot.key ?: "")
+                                                    .child(item.key ?: "")
+
+                                                if (quantityValue == null || quantityValue == 0) {
+                                                    skuDatabaseRef.child("stocks").setValue("Out Of Stock")
+                                                } else {
+                                                    skuDatabaseRef.child("stocks").setValue("In Stock")
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-
-                    // Debugging: Log the updated items to verify stock status
-                    Log.d("StoreItems", "All items before storing: $allItems")
-
-                    // Store non-discount items in the "Products" path
-                    productsRef.setValue(allItems)
-                        .addOnSuccessListener {
-                            // Navigate to Inventory page
-
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("StoreItems", "Failed to store items in Products: $e")
-                            Toast.makeText(this, "Failed to store items in Products", Toast.LENGTH_SHORT).show()
-                        }
-
 
                 }
             }.addOnFailureListener { exception ->
@@ -159,9 +192,6 @@ auth = FirebaseAuthUtil.auth
             }
         }
     }
-
-
-
 
 
     private fun retrieveShopName() {
