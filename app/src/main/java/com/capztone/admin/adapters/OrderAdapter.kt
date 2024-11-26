@@ -98,6 +98,7 @@ class OrderAdapter(private var orderDetailsList: MutableList<OrderDetails>, priv
                         }
                     }
                 }
+                orderDetailsList.sortByDescending { it.orderDate }
                 notifyDataSetChanged()
             }
 
