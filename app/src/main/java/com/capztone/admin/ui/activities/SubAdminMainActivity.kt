@@ -309,8 +309,6 @@ class SubAdminMainActivity : AppCompatActivity() {
                                 Toast.makeText(this@SubAdminMainActivity, "Failed to load order counts", Toast.LENGTH_SHORT).show()
                             }
                         })
-                    } else {
-                        Toast.makeText(this@SubAdminMainActivity, "Shop name not found for admin", Toast.LENGTH_SHORT).show()
                     }
                 }
 
