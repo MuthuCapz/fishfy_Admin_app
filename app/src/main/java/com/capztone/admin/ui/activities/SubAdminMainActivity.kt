@@ -278,7 +278,7 @@ class SubAdminMainActivity : AppCompatActivity() {
                                         }
 
                                         // Check for ongoing orders (accepted but not yet delivered)
-                                        if (status == "Order confirmed" || status == "Order picked") {
+                                        if (status == "Order accepted" || status == "Order picked") {
                                             ongoingCount++
                                         }
 

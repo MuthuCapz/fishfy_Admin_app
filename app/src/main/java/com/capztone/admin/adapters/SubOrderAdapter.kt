@@ -134,7 +134,7 @@ class SubOrderAdapter(
                                     }
                                     "Ongoing Orders" -> {
                                         // Add orders that have "Order Confirmed" status
-                                        if (message == "Order confirmed" || message == "Order picked") {
+                                        if (message == "Order accepted" || message == "Order picked") {
                                             orderDetailsList.add(orderDetails)
                                             sortOrdersByTimestamp()
                                         }
